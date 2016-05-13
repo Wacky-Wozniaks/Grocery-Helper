@@ -1,8 +1,8 @@
 /**
+ * Represents an item to be stored in the inventory.
+ * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
  * @version 05/13/2016
- * --------------------------------------------------
- * Represents an item to be stored in the inventory.
  */
 
 public class Item
