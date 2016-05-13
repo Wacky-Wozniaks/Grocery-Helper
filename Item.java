@@ -144,9 +144,19 @@ public class Item
 	}
 	
 	/**
+	 * Sets the quantity of the item by the amount given.
+	 * 
+	 * @param quantity The quantity of the item in inventory
+	 */
+	public void setQuantity(int quantity)
+	{
+		this.quantity = quantity;
+	}
+	
+	/**
 	 * Updates the quantity of the item by the amount given.
 	 * 
-	 * @param change The quantity of the item in inventory
+	 * @param change The change in quantity of the item in inventory
 	 */
 	public void updateQuantity(int change)
 	{
