@@ -37,9 +37,11 @@ public class InventoryGUI extends JFrame
 		panel.add(name, c);
 		c.gridy++;
 		
+		JTextField quantity = new JTextField("" + item.getQuantity(), 2);
+		
 		JPanel updateQ = new JPanel();
 		JButton plus = new JButton("+");
-		JTextField amount = new JTextField("1", 2);
+		JTextField amount = new JTextField("" + item.getQuantity(), 2);
 		JButton minus = new JButton("-");
 		plus.addActionListener(new UpdateListener(true, item, amount));
 		minus.addActionListener(new UpdateListener(false, item, amount));
@@ -47,13 +49,6 @@ public class InventoryGUI extends JFrame
 		updateQ.add(amount);
 		updateQ.add(plus);
 		panel.add(updateQ, c);
-		c.gridy++;
-		
-		panel.add(new JLabel("Quantity"), c);
-		c.gridx++;
-		JTextField quantity = new JTextField("" + item.getQuantity(), 2);
-		panel.add(quantity, c);
-		c.gridx = 0;
 		c.gridy++;
 		
 		panel.add(new JLabel("Minimum Limit"), c);
@@ -112,8 +107,9 @@ public class InventoryGUI extends JFrame
 		{
 			try
 			{
-				if(plus) item.updateQuantity(Integer.parseInt(field.getText()));
-				else item.updateQuantity(-1 * Integer.parseInt(field.getText()));
+				if(plus) item.updateQuantity(1);
+				else item.updateQuantity(-1);
+				field.setText("" + item.getQuantity());
 			}
 			catch(Throwable e)
 			{
