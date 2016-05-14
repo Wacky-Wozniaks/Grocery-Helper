@@ -2,7 +2,7 @@
  * The GUI for the project.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/12/2016
+ * @version 05/14/2016
  */
 
 import java.awt.event.ActionEvent;
@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -37,18 +38,19 @@ public class InventoryGUI extends JFrame
 		panel.add(name, c);
 		c.gridy++;
 		
-		JTextField quantity = new JTextField("" + item.getQuantity(), 2);
-		
 		JPanel updateQ = new JPanel();
 		JButton plus = new JButton("+");
 		JTextField amount = new JTextField("" + item.getQuantity(), 2);
 		JButton minus = new JButton("-");
-		plus.addActionListener(new UpdateListener(true, item, amount));
-		minus.addActionListener(new UpdateListener(false, item, amount));
+		plus.addActionListener(new QuantityListener(true, item, amount));
+		minus.addActionListener(new QuantityListener(false, item, amount));
 		updateQ.add(minus);
 		updateQ.add(amount);
 		updateQ.add(plus);
 		panel.add(updateQ, c);
+		
+		c.gridy++;
+		panel.add(Box.createVerticalStrut(10), c);
 		c.gridy++;
 		
 		panel.add(new JLabel("Minimum Limit"), c);
@@ -66,22 +68,7 @@ public class InventoryGUI extends JFrame
 		c.gridy++;
 		
 		JButton update = new JButton("Update");
-		update.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				try
-				{
-					item.setQuantity(Integer.parseInt(quantity.getText()));
-					item.setMin(Integer.parseInt(min.getText()));
-					item.setMax(Integer.parseInt(max.getText()));
-				}
-				catch(Throwable e)
-				{
-					JOptionPane.showMessageDialog(panel, "Error", "Enter an integer.", JOptionPane.ERROR_MESSAGE, null);
-				}
-			}
-		});
+		update.addActionListener(new UpdateListener(min, max, item));
 		panel.add(update, c);
 		
 		return panel;
@@ -90,13 +77,13 @@ public class InventoryGUI extends JFrame
 	/**
 	 * A listener for the update quantity buttons.
 	 */
-	private static class UpdateListener implements ActionListener
+	private static class QuantityListener implements ActionListener
 	{
 		private boolean plus;
 		private Item item;
 		private JTextField field;
 		
-		public UpdateListener(boolean plus, Item item, JTextField field)
+		public QuantityListener(boolean plus, Item item, JTextField field)
 		{
 			this.plus = plus;
 			this.item = item;
@@ -118,13 +105,32 @@ public class InventoryGUI extends JFrame
 		}
 	}
 	
-	public static void main(String[] args)
+	/**
+	 * A listener for the update button.
+	 */
+	private static class UpdateListener implements ActionListener
 	{
-		Item i = new Item("Apple", 5, 10, 7);
-		JPanel panel = createItemPanel(i);
-		JFrame frame = new JFrame();
-		frame.add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
+		private JTextField min, max;
+		private Item item;
+		
+		public UpdateListener(JTextField min, JTextField max, Item item)
+		{
+			this.min = min;
+			this.max = max;
+			this.item = item;
+		}
+		
+		public void actionPerformed(ActionEvent arg0)
+		{
+			try
+			{
+				item.setMin(Integer.parseInt(min.getText()));
+				item.setMax(Integer.parseInt(max.getText()));
+			}
+			catch(Throwable e)
+			{
+				JOptionPane.showMessageDialog(min, "Error", "Enter an integer.", JOptionPane.ERROR_MESSAGE, null);
+			}
+		}
 	}
 }
