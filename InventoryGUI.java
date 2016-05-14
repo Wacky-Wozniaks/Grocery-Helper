@@ -92,16 +92,10 @@ public class InventoryGUI extends JFrame
 		
 		public void actionPerformed(ActionEvent arg0)
 		{
-			try
-			{
-				if(plus) item.updateQuantity(1);
-				else item.updateQuantity(-1);
-				field.setText("" + item.getQuantity());
-			}
-			catch(Throwable e)
-			{
-				JOptionPane.showMessageDialog(field, "Error", "Enter an integer.", JOptionPane.ERROR_MESSAGE, null);
-			}
+			if(plus) item.updateQuantity(1);
+			else if(item.getQuantity() != 0) item.updateQuantity(-1);
+			else JOptionPane.showMessageDialog(field, "Quantity cannot be below 0.", "Error", JOptionPane.ERROR_MESSAGE, null);
+			field.setText("" + item.getQuantity());
 		}
 	}
 	
@@ -129,7 +123,7 @@ public class InventoryGUI extends JFrame
 			}
 			catch(Throwable e)
 			{
-				JOptionPane.showMessageDialog(min, "Error", "Enter an integer.", JOptionPane.ERROR_MESSAGE, null);
+				JOptionPane.showMessageDialog(min, "Enter an integer.", "Error", JOptionPane.ERROR_MESSAGE, null);
 			}
 		}
 	}
