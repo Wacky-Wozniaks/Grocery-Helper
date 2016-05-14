@@ -5,7 +5,7 @@
  * @version 05/13/2016
  */
 
-public class Item
+public class Item implements Comparable<Item>
 {
 	private int quantity, min, max, code;
 	private String name;
@@ -182,4 +182,37 @@ public class Item
 	{
 		return max - quantity;
 	}
+	
+	/**
+	 * Compares this to Item other
+	 * 
+	 * @param other The Item to be compared to
+	 * @return The compared number
+	 */
+	public int compareTo(Item other)
+	{
+		return name.compareTo(other.getName());
+	}
+	
+	/**
+	 * Returns whether this is equal to other
+	 * 
+	 * @param other The Item to be compared to
+	 * @return Whether this is equivalent to other
+	 * @throws IllegalArgumentException Other is not of type Item
+	 */
+	public boolean equals(Object other) {
+		if(other instanceof Item) return this.compareTo((Item) other) == 0;
+		else throw new IllegalArgumentException();
+	}
+	
+	/**
+	 * Returns the String of this
+	 * 
+	 * @return the String form of this
+	 */
+	public String toString() {
+		return name;
+	}
+	
 }
