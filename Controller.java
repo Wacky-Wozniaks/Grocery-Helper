@@ -5,12 +5,6 @@
  * @version 05/14/2016
  */
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
-
 public class Controller
 {
 	/**
@@ -18,16 +12,11 @@ public class Controller
 	 */
 	public static void main(String[] args)
 	{
-		try
-		{
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		}
-		catch(Throwable e){}
-		Item i = new Item("Apple", 5, 10, 7);
-		JPanel panel = InventoryGUI.createItemPanel(i);
-		JFrame frame = new JFrame();
-		frame.add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
+		Inventory i = new Inventory("name");
+		i.add(new Item("Apple", 3, 8, 5));
+		i.add(new Item("Banana", 4, 7, 2));
+		i.add(new Item("Carrot", 4, 8, 5));
+		
+		InventoryGUI g = new InventoryGUI(i);
 	}
 }

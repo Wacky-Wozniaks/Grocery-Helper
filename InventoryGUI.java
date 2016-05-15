@@ -2,129 +2,48 @@
  * The GUI for the project.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/14/2016
+ * @version 05/15/2016
  */
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.UIManager;
+
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class InventoryGUI extends JFrame
 {
+	private Inventory inventory;
+	
 	/**
-	 * Creates a panel for an Item.
+	 * Constructs the GUI with the given inventory.
 	 * 
-	 * @param item What the panel will display.
-	 * @return The panel for the item.
+	 * @param inventory The inventory to be displayed.
 	 */
-	public static JPanel createItemPanel(Item item)
+	public InventoryGUI(Inventory inventory)
 	{
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = 0;
-		c.gridx = 0;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		
-		JLabel name = new JLabel(item.getName());
-		panel.add(name, c);
-		c.gridy++;
-		
-		JPanel updateQ = new JPanel();
-		JButton plus = new JButton("+");
-		JTextField amount = new JTextField("" + item.getQuantity(), 2);
-		JButton minus = new JButton("-");
-		plus.addActionListener(new QuantityListener(true, item, amount));
-		minus.addActionListener(new QuantityListener(false, item, amount));
-		updateQ.add(minus);
-		updateQ.add(amount);
-		updateQ.add(plus);
-		panel.add(updateQ, c);
-		
-		c.gridy++;
-		panel.add(Box.createVerticalStrut(10), c);
-		c.gridy++;
-		
-		panel.add(new JLabel("Minimum Limit"), c);
-		c.gridx++;
-		JTextField min = new JTextField("" + item.getMin(), 2);
-		panel.add(min, c);
-		c.gridx = 0;
-		c.gridy++;
-		
-		panel.add(new JLabel("Maximum Limit"), c);
-		c.gridx++;
-		JTextField max = new JTextField("" + item.getMax(), 2);
-		panel.add(max, c);
-		c.gridx = 0;
-		c.gridy++;
-		
-		JButton update = new JButton("Update");
-		update.addActionListener(new UpdateListener(min, max, item));
-		panel.add(update, c);
-		
-		return panel;
-	}
-	
-	/**
-	 * A listener for the update quantity buttons.
-	 */
-	private static class QuantityListener implements ActionListener
-	{
-		private boolean plus;
-		private Item item;
-		private JTextField field;
-		
-		public QuantityListener(boolean plus, Item item, JTextField field)
+		try
 		{
-			this.plus = plus;
-			this.item = item;
-			this.field = field;
+			UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		}
+		catch(Throwable e){}
 		
-		public void actionPerformed(ActionEvent arg0)
-		{
-			if(plus) item.updateQuantity(1);
-			else if(item.getQuantity() != 0) item.updateQuantity(-1);
-			else JOptionPane.showMessageDialog(field, "Quantity cannot be below 0.", "Error", JOptionPane.ERROR_MESSAGE, null);
-			field.setText("" + item.getQuantity());
-		}
-	}
-	
-	/**
-	 * A listener for the update button.
-	 */
-	private static class UpdateListener implements ActionListener
-	{
-		private JTextField min, max;
-		private Item item;
+		this.inventory = inventory;
+		JPanel panel = new JPanel();
 		
-		public UpdateListener(JTextField min, JTextField max, Item item)
+		Box b = Box.createVerticalBox();
+		JScrollPane scroll = new JScrollPane(b);
+		for(Item i: inventory.getInventory())
 		{
-			this.min = min;
-			this.max = max;
-			this.item = item;
+			b.add(new ItemGUI(i));
 		}
+		panel.add(scroll);
 		
-		public void actionPerformed(ActionEvent arg0)
-		{
-			try
-			{
-				item.setMin(Integer.parseInt(min.getText()));
-				item.setMax(Integer.parseInt(max.getText()));
-			}
-			catch(Throwable e)
-			{
-				JOptionPane.showMessageDialog(min, "Enter an integer.", "Error", JOptionPane.ERROR_MESSAGE, null);
-			}
-		}
+		add(panel);
+		pack();
+		setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }

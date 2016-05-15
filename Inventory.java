@@ -2,7 +2,7 @@
  * Represents the inventory in a binary search tree
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/13/2016
+ * @version 05/15/2016
  */
 
 import java.io.File;
@@ -111,6 +111,26 @@ public class Inventory extends Observable {
 					Integer.parseInt(item[4])));
 		}
 		scan.close();
+	}
+	
+	/**
+	 * Returns the TreeSet of the inventory.
+	 * 
+	 * @return The inventory represented as a TreeSet.
+	 */
+	public TreeSet<Item> getInventory()
+	{
+		return inventory;
+	}
+	
+	/**
+	 * Adds the item to the inventory.
+	 * 
+	 * @param item The item to be added.
+	 */
+	public void add(Item item)
+	{
+		inventory.add(item);
 	}
 	
 }
