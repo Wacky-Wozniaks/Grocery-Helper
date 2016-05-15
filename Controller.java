@@ -36,6 +36,7 @@ public class Controller
 			i.add(new Item("Carrot", 5, 8, 6));
 			inventories.add(i);
 		}
+		inventories.get(0).add(new Item("Orange", 6, 9, 4));
 		new InventoryGUI(inventories.get(0));
 		
 		/*

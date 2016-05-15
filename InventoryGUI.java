@@ -5,6 +5,8 @@
  * @version 05/15/2016
  */
 
+import java.awt.Dimension;
+
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -34,11 +36,13 @@ public class InventoryGUI extends JFrame
 		JPanel panel = new JPanel();
 		
 		Box b = Box.createVerticalBox();
-		JScrollPane scroll = new JScrollPane(b);
+		
 		for(Item i: inventory.getInventory())
 		{
 			b.add(new ItemGUI(i));
 		}
+		JScrollPane scroll = new JScrollPane(b, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setPreferredSize(new Dimension(150, 80));
 		panel.add(scroll);
 		
 		add(panel);
