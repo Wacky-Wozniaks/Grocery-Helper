@@ -20,7 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class ItemGUI extends JPanel
 {
@@ -38,7 +40,12 @@ public class ItemGUI extends JPanel
 	 * @param item The item to create components for.
 	 */
 	public ItemGUI(Item item)
-	{
+	{	
+		try
+		{
+			UIManager.setLookAndFeel(new NimbusLookAndFeel());
+		}
+		catch(Throwable e){}
 		this.item = item;
 		createItemFrame(); //Initializes the frame that will pop up if the panel is clicked on.
 		
@@ -163,5 +170,13 @@ public class ItemGUI extends JPanel
 		frame = new JFrame();
 		frame.add(panel);
 		frame.setSize(300, 200);
+	}
+	
+	/**
+	 * Sets the frame for the item visible.
+	 */
+	public void showFrame()
+	{
+		frame.setVisible(true);
 	}
 }

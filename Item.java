@@ -9,6 +9,7 @@ public class Item implements Comparable<Item>
 {
 	private int quantity, min, max, code;
 	private String name;
+	private ItemGUI gui;
 	
 	/**
 	 * Creates an item given all of its instance variables.
@@ -26,6 +27,7 @@ public class Item implements Comparable<Item>
 		this.max = max;
 		this.quantity = quantity;
 		this.code = code;
+		gui = new ItemGUI(this);
 	}
 	
 	/**
@@ -215,4 +217,13 @@ public class Item implements Comparable<Item>
 		return name;
 	}
 	
+	/**
+	 * Returns the GUI associated with the item.
+	 * 
+	 * @return The GUI for the item.
+	 */
+	public ItemGUI getGUI()
+	{
+		return gui;
+	}
 }

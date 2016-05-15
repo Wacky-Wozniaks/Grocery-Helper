@@ -27,16 +27,6 @@ public class Controller
 	public static void main(String[] args) throws IOException
 	{
 		inventories = importInventories();
-		
-		if(inventories.size() == 0)
-		{
-			Inventory i = new Inventory("Inventory");
-			i.add(new Item("Apple", 4, 8, 6));
-			i.add(new Item("Banana", 3, 7, 2));
-			i.add(new Item("Carrot", 5, 8, 6));
-			inventories.add(i);
-		}
-		inventories.get(0).add(new Item("Orange", 6, 9, 4));
 		new InventoryGUI(inventories.get(0));
 		
 		/*
