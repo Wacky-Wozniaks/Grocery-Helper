@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,15 +23,16 @@ public class Controller
 {
 	
 	private static final String INVENTORY_FILE_LOC = "inventories.ilist";
+	private static ArrayList<Inventory> inventories;
 	
 	/**
 	 * Runs the program.
+	 * 
 	 * @throws FileNotFoundException If there is a problem in the import/export
 	 */
-	public static void main(String[] args) throws FileNotFoundException
+	public static void main(String[] args) throws IOException
 	{
-		ArrayList<String> inventoryNames = importInventories();
-		
+		inventories = importInventories();
 		
 		try
 		{
@@ -47,11 +47,21 @@ public class Controller
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
+		/*
+		 * Sets so that whenever the user quits the program the following code is run.
+		 * This code exports all the inventories then the list of inventories so that they
+		 * can be imported for the next use of the program.
+		 */
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
+				for(Inventory i: inventories) {
+					try {
+						i.exportInventory();
+					} catch (IOException e) {}
+				}
 				try {
-					preferences.export();
-				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
+					exportInventories(inventories);
+				} catch (IOException e) {}
 			}
 		});
 	}
@@ -62,15 +72,18 @@ public class Controller
 	 * @return The list of inventory names
 	 * @throws FileNotFoundException If there is a problem locating the File
 	 */
-	private static ArrayList<String> importInventories() throws FileNotFoundException {
-		ArrayList<String> list = new ArrayList<String>();
+	private static ArrayList<Inventory> importInventories() throws FileNotFoundException {
+		ArrayList<Inventory> list = new ArrayList<Inventory>();
 		File file = new File(INVENTORY_FILE_LOC);
 		
 		if(!file.exists()) return list;
 		
 		Scanner scan = new Scanner(file);
-		while(scan.hasNextLine()) 
-			list.add(scan.nextLine());
+		while(scan.hasNextLine()) {
+			Inventory temp = new Inventory(scan.nextLine());
+			temp.importInventory();
+			list.add(temp);
+		}
 		scan.close();
 		return list;
 	}
