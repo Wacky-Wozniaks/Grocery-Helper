@@ -10,10 +10,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -77,6 +79,43 @@ public class InventoryGUI extends JFrame
 		JScrollPane scroll = new JScrollPane(b, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setPreferredSize(new Dimension(searchBar.getPreferredSize().width, 80));
 		panel.add(scroll, c);
+		
+		JButton list = new JButton("Create Grocery List");
+		list.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				LinkedList<Item> groceries = inventory.getGroceryList();
+				if(groceries.size() == 0)
+				{
+					JOptionPane.showMessageDialog(panel, "No groceries need to be purchased.", "No List Created", JOptionPane.PLAIN_MESSAGE);
+					return;
+				}
+				Box items = Box.createVerticalBox();
+				for(Item i: groceries)
+				{
+					items.add(new JLabel(i + " - " + i.amountToBuy()));
+				}
+				JButton update = new JButton("Add to Inventory");
+				update.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent arg0)
+					{
+						for(Item i: groceries)
+						{
+							i.setQuantity(i.getMax());
+						}
+					}
+				});
+				items.add(update);
+				JFrame frame = new JFrame();
+				frame.add(items);
+				frame.pack();
+				frame.setVisible(true);
+			}
+		});
+		c.gridy++;
+		panel.add(list, c);
 		
 		add(panel);
 		pack();

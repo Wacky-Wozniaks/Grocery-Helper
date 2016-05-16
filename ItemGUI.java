@@ -98,6 +98,17 @@ public class ItemGUI extends JPanel
 	}
 	
 	/**
+	 * Updates the displayed quantity of the item within the GUI components.
+	 */
+	public void updateQuantity()
+	{
+		quantity.setText("" + item.getQuantity());
+		amount.setText("" + item.getQuantity());
+		if(item.moreNeeded()) name.setForeground(Color.RED);
+		else name.setForeground(Color.BLACK);
+	}
+	
+	/**
 	 * Creates a frame for an item.
 	 * 
 	 * @param item What the frame will display.
