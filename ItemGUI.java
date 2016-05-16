@@ -5,6 +5,7 @@
  * @version 05/15/2016
  */
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -30,6 +31,7 @@ public class ItemGUI extends JPanel
 	
 	//Components for the panel.
 	private JLabel name, quantity;
+	private JPanel namePanel, quantityPanel;
 	
 	//The popup frame and its components which need to be available to the panel.
 	private JFrame frame;
@@ -40,7 +42,7 @@ public class ItemGUI extends JPanel
 	 * @param item The item to create components for.
 	 */
 	public ItemGUI(Item item)
-	{	
+	{
 		try
 		{
 			UIManager.setLookAndFeel(new NimbusLookAndFeel());
@@ -49,12 +51,21 @@ public class ItemGUI extends JPanel
 		this.item = item;
 		createItemFrame(); //Initializes the frame that will pop up if the panel is clicked on.
 		
+		setLayout(new BorderLayout());
 		name = new JLabel(item.getName());
 		if(item.moreNeeded()) name.setForeground(Color.RED);
-		add(name);
-		add(Box.createHorizontalStrut(15));
+		namePanel = new JPanel();
+		namePanel.add(Box.createHorizontalStrut(5));
+		namePanel.add(name);
+		namePanel.setBackground(Color.WHITE);
+		add(namePanel, BorderLayout.WEST);
+		
 		quantity = new JLabel("" + item.getQuantity());
-		add(quantity);
+		quantityPanel = new JPanel();
+		quantityPanel.add(quantity);
+		quantityPanel.add(Box.createHorizontalStrut(5));
+		quantityPanel.setBackground(Color.WHITE);
+		add(quantityPanel, BorderLayout.EAST);
 		
 		setBackground(Color.WHITE);
 		setBorder(new LineBorder(Color.BLACK, 1, true));
@@ -69,11 +80,15 @@ public class ItemGUI extends JPanel
 			public void mouseEntered(MouseEvent arg0)
 			{
 				setBackground(Color.LIGHT_GRAY);
+				namePanel.setBackground(Color.LIGHT_GRAY);
+				quantityPanel.setBackground(Color.LIGHT_GRAY);
 			}
 
 			public void mouseExited(MouseEvent arg0)
 			{
 				setBackground(Color.WHITE);
+				namePanel.setBackground(Color.WHITE);
+				quantityPanel.setBackground(Color.WHITE);
 			}
 
 			public void mousePressed(MouseEvent arg0) {}
