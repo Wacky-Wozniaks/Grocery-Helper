@@ -27,13 +27,15 @@ public class InventoryGUI extends JFrame
 {
 	private Inventory inventory;
 	private JTextField bar;
+	private LinkedList<Item> groceries;
+	private JPanel panel;
 	
 	/**
 	 * Constructs the GUI with the given inventory.
 	 * 
 	 * @param inventory The inventory to be displayed.
 	 */
-	public InventoryGUI(Inventory inventory)
+	public InventoryGUI(Inventory inv)
 	{
 		try
 		{
@@ -41,8 +43,8 @@ public class InventoryGUI extends JFrame
 		}
 		catch(Throwable e){}
 		
-		this.inventory = inventory;
-		JPanel panel = new JPanel(new GridBagLayout());
+		this.inventory = inv;
+		panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
 		
@@ -79,7 +81,7 @@ public class InventoryGUI extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				LinkedList<Item> groceries = inventory.getGroceryList();
+				groceries = inventory.getGroceryList();
 				if(groceries.size() == 0)
 				{
 					JOptionPane.showMessageDialog(panel, "No groceries need to be purchased.", "No List Created", JOptionPane.PLAIN_MESSAGE);
