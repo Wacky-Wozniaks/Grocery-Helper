@@ -2,7 +2,7 @@
  * The GUI for an inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/15/2016
+ * @version 05/17/2016
  */
 
 import java.awt.Color;
@@ -37,6 +37,7 @@ public class InventoryGUI extends JFrame
 	private JTextField bar;
 	private LinkedList<Item> groceries;
 	private JPanel panel;
+	private Box b; //A box which contains all items
 	
 	/**
 	 * Constructs the GUI with the given inventory.
@@ -56,12 +57,7 @@ public class InventoryGUI extends JFrame
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
 		
-		JPanel searchBar = new JPanel();
 		bar = new JTextField(20);
-		
-		bar.setForeground(GHOST_COLOR);
-		bar.setText(GHOST_TEXT);
-		
 		//searches the inventory as the keys are pressed
 		bar.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {}
@@ -75,6 +71,9 @@ public class InventoryGUI extends JFrame
 			}
 		});
 		
+		//Adds and removes instructions for searching based on whether the textfield has focus
+		bar.setForeground(GHOST_COLOR);
+		bar.setText(GHOST_TEXT);
 		bar.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
 				if(bar.getForeground().equals(GHOST_COLOR) && bar.getText().equals(GHOST_TEXT)) {
@@ -91,39 +90,31 @@ public class InventoryGUI extends JFrame
 			}
 		});
 		
-		searchBar.add(bar);
-		panel.add(searchBar, c);
 		
+		
+		//Adds items to the inventory 
 		JButton add = new JButton("Add Item");
 		add.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				JFrame addFrame = new JFrame("Add Item");
-				JPanel addPanel = new JPanel(new GridBagLayout());
-				GridBagConstraints g = new GridBagConstraints();
-				g.gridy = 0;
-				g.gridx = 0;
-				addPanel.add(new JLabel("Name"), g);
-				g.gridx++;
-				JTextField name = new JTextField(10);
-				addPanel.add(name, g);
-				g.gridx = 0;
-				g.gridy++;
-				addPanel.add(new JLabel("Quantity"));
-				g.gridx++;
-				addFrame.setVisible(true);
+				new AddFrame();
 			}
 		});
 		
+		JPanel upperBar = new JPanel();
+		upperBar.add(bar);
+		upperBar.add(add);
+		panel.add(upperBar, c);
+		
 		c.gridy++;
-		Box b = Box.createVerticalBox();
+		b = Box.createVerticalBox();
 		for(Item i: inventory.getInventory())
 		{
 			b.add(i.getGUI());
 		}
 		JScrollPane scroll = new JScrollPane(b, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setPreferredSize(new Dimension(searchBar.getPreferredSize().width, 80));
+		scroll.setPreferredSize(new Dimension(upperBar.getPreferredSize().width, 80));
 		panel.add(scroll, c);
 		
 		JButton list = new JButton("Create Grocery List");
@@ -168,5 +159,82 @@ public class InventoryGUI extends JFrame
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.requestFocus(); //makes the frame get the focus
+	}
+	
+	/**
+	 * A private inner class for the frame that allows the addition of a new item to the inventory
+	 */
+	private class AddFrame extends JFrame
+	{
+		public final String[] VALUES = {"Quantity", "Minimum Limit", "Maximum Limit"};
+		private JTextField name;
+		private JTextField[] intVals;
+		private JPanel addPanel;
+		
+		/**
+		 * Creates the frame.
+		 */
+		public AddFrame()
+		{
+			super("Add Item");
+			//The panel contains textfields for name, quantity, and min and max limits.
+			addPanel = new JPanel(new GridBagLayout());
+			GridBagConstraints g = new GridBagConstraints();
+			g.gridy = 0;
+			g.gridx = 0;
+			addPanel.add(new JLabel("Name"), g);
+			g.gridx++;
+			name = new JTextField(10);
+			//name.setPreferredSize(name.getPreferredSize());
+			addPanel.add(name, g);
+			
+			intVals = new JTextField[VALUES.length];
+			for(int index = 0; index < VALUES.length; index++)
+			{
+				g.gridx = 0;
+				g.gridy++;
+				addPanel.add(new JLabel(VALUES[index]), g);
+				g.gridx++;
+				intVals[index] = new JTextField(2);
+				addPanel.add(intVals[index], g);
+			}
+			
+			//Once the button is pressed, it will add the item to the inventory
+			JButton add = new JButton("Add");
+			add.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent arg0)
+				{
+					//Tests that the name is not an empty string.
+					String n = name.getText();
+					if(n.trim().equals("")) JOptionPane.showMessageDialog(addPanel, "Invalid item name.", "", JOptionPane.ERROR_MESSAGE, null);
+					
+					//Tests that each input is a number
+					int[] values = new int[intVals.length];
+					for(int index = 0; index < intVals.length; index++)
+					{
+						try
+						{
+							values[index] = Integer.parseInt(intVals[index].getText());
+						}
+						catch(Throwable e)
+						{
+							JOptionPane.showMessageDialog(addPanel, VALUES[index] + "Must be an integer.", "", JOptionPane.ERROR_MESSAGE, null);
+						}
+					}
+					
+					//Constructs the item and adds it to the inventory
+					Item i = new Item(n, values[1], values[2], values[0]);
+					inventory.add(i);
+					b.add(i.getGUI());
+				}
+			});
+			g.gridy++;
+			g.gridx = 0;
+			addPanel.add(add, g);
+			add(addPanel);
+			pack();
+			setVisible(true);
+		}
 	}
 }
