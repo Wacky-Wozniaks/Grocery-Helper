@@ -13,13 +13,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Scanner;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 public class Inventory extends Observable {
 	
 	private static final String EXTENSION = ".inventory";
 	
-	private TreeSet<Item> inventory;
+	private TreeMap<String, Item> inventory;
 	private String name;
 	private String fileName;
 	private File file;
@@ -31,7 +31,12 @@ public class Inventory extends Observable {
 	 * @param items The items to be added to the inventory
 	 */
 	public Inventory(String name, Collection<Item> items) {
-		inventory = new TreeSet<Item>(items);
+		
+		inventory = new TreeMap<String, Item>();
+		for(Item i: items)
+		{
+			inventory.put(i.getName().toLowerCase(), i);
+		}
 		this.name = name;
 		fileName = name + EXTENSION;
 		file = new File(fileName);
@@ -43,7 +48,7 @@ public class Inventory extends Observable {
 	 * @param name The name of the inventory
 	 */
 	public Inventory(String name) {
-		inventory = new TreeSet<Item>();
+		inventory = new TreeMap<String, Item>();
 		this.name = name;
 		fileName = name + EXTENSION;
 		file = new File(fileName);
@@ -56,7 +61,7 @@ public class Inventory extends Observable {
 	 */
 	public LinkedList<Item> getGroceryList() {
 		LinkedList<Item> list = new LinkedList<Item>();
-		for(Item i: inventory)
+		for(Item i: inventory.values())
 			if(i.moreNeeded()) list.add(i);
 		return list;
 	}
@@ -91,7 +96,7 @@ public class Inventory extends Observable {
 	public void exportInventory() throws IOException {
 		if(!file.exists()) file.createNewFile();
 		PrintWriter writer = new PrintWriter(file);
-		for(Item i: inventory) writer.println(i.getName() + "," + i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
+		for(Item i: inventory.values()) writer.println(i.getName() + "," + i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
 					+ i.getCode());
 		writer.close();
 	}
@@ -107,7 +112,7 @@ public class Inventory extends Observable {
 		while(scan.hasNextLine()) {
 			String line = scan.nextLine();
 			String[] item = line.split(",");
-			inventory.add(new Item(item[0], Integer.parseInt(item[1]), Integer.parseInt(item[2]), Integer.parseInt(item[3]),
+			inventory.put(item[0].toLowerCase(), new Item(item[0], Integer.parseInt(item[1]), Integer.parseInt(item[2]), Integer.parseInt(item[3]),
 					Integer.parseInt(item[4])));
 		}
 		scan.close();
@@ -118,9 +123,9 @@ public class Inventory extends Observable {
 	 * 
 	 * @return The inventory represented as a TreeSet.
 	 */
-	public TreeSet<Item> getInventory()
+	public Collection<Item> getInventory()
 	{
-		return inventory;
+		return inventory.values();
 	}
 	
 	/**
@@ -130,7 +135,17 @@ public class Inventory extends Observable {
 	 */
 	public void add(Item item)
 	{
-		inventory.add(item);
+		inventory.put(item.toString().toLowerCase(), item);
 	}
 	
+	/**
+	 * Returns the item associated with the name in the map, or null if it does not exist.
+	 * 
+	 * @param name The name of the object to find.
+	 * @return The object in the tree with the given name, or null if it does not exist.
+	 */
+	public Item get(String name)
+	{
+		return inventory.get(name.toLowerCase());
+	}
 }

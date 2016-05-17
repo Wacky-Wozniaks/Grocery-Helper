@@ -55,15 +55,9 @@ public class InventoryGUI extends JFrame
 			{
 				String text = bar.getText();
 				if(text.equals("")) return;
-				for(Item i : inventory.getInventory())
-				{
-					if(i.getName().equalsIgnoreCase(text))
-					{
-						i.getGUI().showFrame();
-						return;
-					}
-				}
-				JOptionPane.showMessageDialog(bar, text + " could not be found in this inventory.", "Item Not Found", JOptionPane.PLAIN_MESSAGE);
+				Item i = inventory.get(text);
+				if(i != null) i.getGUI().showFrame();
+				else JOptionPane.showMessageDialog(bar, text + " could not be found in this inventory.", "Item Not Found", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		searchBar.add(bar);
