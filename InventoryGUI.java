@@ -5,11 +5,16 @@
  * @version 05/15/2016
  */
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.LinkedList;
 
 import javax.swing.Box;
@@ -25,6 +30,9 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class InventoryGUI extends JFrame
 {
+	private static final String GHOST_TEXT = "Search Inventory...";
+	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
+	
 	private Inventory inventory;
 	private JTextField bar;
 	private LinkedList<Item> groceries;
@@ -49,21 +57,42 @@ public class InventoryGUI extends JFrame
 		c.gridy = 0;
 		
 		JPanel searchBar = new JPanel();
-		bar = new JTextField(15);
-		JButton search = new JButton("Search");
-		search.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				String text = bar.getText();
-				if(text.equals("")) return;
-				Item i = inventory.get(text);
-				if(i != null) i.getGUI().showFrame();
-				else JOptionPane.showMessageDialog(bar, text + " could not be found in this inventory.", "Item Not Found", JOptionPane.PLAIN_MESSAGE);
+		bar = new JTextField(20);
+		
+		bar.setForeground(GHOST_COLOR);
+		bar.setText(GHOST_TEXT);
+		
+		//searches the inventory as the keys are pressed
+		bar.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {
+				String lowercase = bar.getText().toLowerCase();
+				for(Item i: inventory.getInventory()) {
+					if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
+					else i.getGUI().setVisible(false);
+				}
+			}
+			
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {}
+		});
+		
+		bar.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				if(bar.getForeground().equals(GHOST_COLOR) && bar.getText().equals(GHOST_TEXT)) {
+					bar.setForeground(Color.BLACK);
+					bar.setText("");
+				}
+			}
+			
+			public void focusLost(FocusEvent e) {
+				if(bar.getText().trim().equals("")) {
+					bar.setForeground(GHOST_COLOR);
+					bar.setText(GHOST_TEXT);
+				}
 			}
 		});
+		
 		searchBar.add(bar);
-		searchBar.add(search);
 		panel.add(searchBar, c);
 		
 		JButton add = new JButton("Add Item");
@@ -139,5 +168,6 @@ public class InventoryGUI extends JFrame
 		pack();
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.requestFocus(); //makes the frame get the focus
 	}
 }
