@@ -66,6 +66,28 @@ public class InventoryGUI extends JFrame
 		searchBar.add(search);
 		panel.add(searchBar, c);
 		
+		JButton add = new JButton("Add Item");
+		add.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				JFrame addFrame = new JFrame("Add Item");
+				JPanel addPanel = new JPanel(new GridBagLayout());
+				GridBagConstraints g = new GridBagConstraints();
+				g.gridy = 0;
+				g.gridx = 0;
+				addPanel.add(new JLabel("Name"), g);
+				g.gridx++;
+				JTextField name = new JTextField(10);
+				addPanel.add(name, g);
+				g.gridx = 0;
+				g.gridy++;
+				addPanel.add(new JLabel("Quantity"));
+				g.gridx++;
+				addFrame.setVisible(true);
+			}
+		});
+		
 		c.gridy++;
 		Box b = Box.createVerticalBox();
 		for(Item i: inventory.getInventory())
