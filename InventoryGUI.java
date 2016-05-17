@@ -64,16 +64,15 @@ public class InventoryGUI extends JFrame
 		
 		//searches the inventory as the keys are pressed
 		bar.addKeyListener(new KeyListener() {
-			public void keyTyped(KeyEvent e) {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
 				String lowercase = bar.getText().toLowerCase();
 				for(Item i: inventory.getInventory()) {
 					if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
 					else i.getGUI().setVisible(false);
 				}
 			}
-			
-			public void keyPressed(KeyEvent e) {}
-			public void keyReleased(KeyEvent e) {}
 		});
 		
 		bar.addFocusListener(new FocusListener() {
