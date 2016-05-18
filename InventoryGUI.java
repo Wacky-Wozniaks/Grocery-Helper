@@ -18,6 +18,7 @@ import java.awt.event.KeyListener;
 import java.util.LinkedList;
 
 import javax.swing.Box;
+import javax.swing.Box.Filler;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,6 +33,7 @@ public class InventoryGUI extends JFrame
 {
 	private static final String GHOST_TEXT = "Search Inventory...";
 	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
+	private static final int SCROLL_PANEL_HEIGHT = 300;
 	
 	private Inventory inventory;
 	private JTextField bar;
@@ -113,8 +115,10 @@ public class InventoryGUI extends JFrame
 		{
 			b.add(i.getGUI());
 		}
+		if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over
+			b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
 		JScrollPane scroll = new JScrollPane(b, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setPreferredSize(new Dimension(upperBar.getPreferredSize().width, 80));
+		scroll.setPreferredSize(new Dimension(upperBar.getPreferredSize().width, SCROLL_PANEL_HEIGHT));
 		panel.add(scroll, c);
 		
 		JButton list = new JButton("Create Grocery List");
@@ -201,6 +205,7 @@ public class InventoryGUI extends JFrame
 			
 			//Once the button is pressed, it will add the item to the inventory
 			JButton add = new JButton("Add");
+			final JFrame thisFrame = this; //I need this so I can dispose it at the end of the action listener
 			add.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent arg0)
@@ -231,8 +236,12 @@ public class InventoryGUI extends JFrame
 					//Constructs the item and adds it to the inventory
 					Item i = new Item(n, values[1], values[2], values[0]);
 					inventory.add(i);
+					if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
+						b.remove(b.getComponentCount() - 1); //removes the rigid box
 					b.add(i.getGUI());
-					addPanel.setVisible(false);
+					if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
+						b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
+					thisFrame.dispose();
 				}
 			});
 			g.gridy++;
