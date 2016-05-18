@@ -70,6 +70,10 @@ public class InventoryGUI extends JFrame
 					if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
 					else i.getGUI().setVisible(false);
 				}
+				if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
+					b.remove(b.getComponentCount() - 1); //removes the rigid box
+				if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
+					b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
 			}
 		});
 		
