@@ -182,10 +182,10 @@ public class InventoryGUI extends JFrame
 			GridBagConstraints g = new GridBagConstraints();
 			g.gridy = 0;
 			g.gridx = 0;
-			addPanel.add(new JLabel("Name"), g);
+			g.anchor = GridBagConstraints.WEST;
+			addPanel.add(new JLabel(" Name"), g);
 			g.gridx++;
 			name = new JTextField(10);
-			//name.setPreferredSize(name.getPreferredSize());
 			addPanel.add(name, g);
 			
 			intVals = new JTextField[VALUES.length];
@@ -193,9 +193,9 @@ public class InventoryGUI extends JFrame
 			{
 				g.gridx = 0;
 				g.gridy++;
-				addPanel.add(new JLabel(VALUES[index]), g);
+				addPanel.add(new JLabel(" " + VALUES[index] + " "), g);
 				g.gridx++;
-				intVals[index] = new JTextField(2);
+				intVals[index] = new JTextField(10);
 				addPanel.add(intVals[index], g);
 			}
 			
@@ -207,7 +207,11 @@ public class InventoryGUI extends JFrame
 				{
 					//Tests that the name is not an empty string.
 					String n = name.getText();
-					if(n.trim().equals("")) JOptionPane.showMessageDialog(addPanel, "Invalid item name.", "", JOptionPane.ERROR_MESSAGE, null);
+					if(n.trim().equals(""))
+					{
+						JOptionPane.showMessageDialog(addPanel, "Invalid item name.", "", JOptionPane.ERROR_MESSAGE, null);
+						return;
+					}
 					
 					//Tests that each input is a number
 					int[] values = new int[intVals.length];
@@ -219,7 +223,8 @@ public class InventoryGUI extends JFrame
 						}
 						catch(Throwable e)
 						{
-							JOptionPane.showMessageDialog(addPanel, VALUES[index] + "Must be an integer.", "", JOptionPane.ERROR_MESSAGE, null);
+							JOptionPane.showMessageDialog(addPanel, VALUES[index] + " must be an integer.", "", JOptionPane.ERROR_MESSAGE, null);
+							return;
 						}
 					}
 					
@@ -227,6 +232,7 @@ public class InventoryGUI extends JFrame
 					Item i = new Item(n, values[1], values[2], values[0]);
 					inventory.add(i);
 					b.add(i.getGUI());
+					addPanel.setVisible(false);
 				}
 			});
 			g.gridy++;
