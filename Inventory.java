@@ -150,4 +150,17 @@ public class Inventory extends Observable {
 	{
 		return inventory.get(name.toLowerCase());
 	}
+	
+	/**
+	 * Merges the item with the instance of the item that already exists in the inventory. Adds the quantities and sets min and max to the new values.
+	 * 
+	 * @param item The item to merge into the inventory.
+	 */
+	public void merge(Item item)
+	{
+		Item i = inventory.get(item.getName().toLowerCase());
+		i.updateQuantity(item.getQuantity());
+		i.setMax(item.getMax());
+		i.setMin(item.getMin());
+	}
 }

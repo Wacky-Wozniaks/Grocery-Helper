@@ -2,7 +2,7 @@
  * The GUI for an inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/17/2016
+ * @version 05/18/2016
  */
 
 import java.awt.Color;
@@ -239,12 +239,29 @@ public class InventoryGUI extends JFrame
 					
 					//Constructs the item and adds it to the inventory
 					Item i = new Item(n, values[1], values[2], values[0]);
-					inventory.add(i);
-					if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
-						b.remove(b.getComponentCount() - 1); //removes the rigid box
-					b.add(i.getGUI());
-					if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
-						b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
+					
+					//If the item already exists in the inventory, gives the option to merge the two values.
+					if(inventory.add(i))
+					{
+						if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
+							b.remove(b.getComponentCount() - 1); //removes the rigid box
+						b.add(i.getGUI());
+						if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
+							b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
+					}
+					else
+					{
+						int merge = JOptionPane.showConfirmDialog(addPanel, "<html>" + n + " already exists in this inventory with quantity " + 
+								inventory.get(n).getQuantity() + ".<br>" + "Would you like to merge the items?", "Item Already Exists", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						if(merge == JOptionPane.YES_OPTION)
+						{
+							inventory.merge(i);
+							inventory.get(n).getGUI().updateQuantity();
+							
+						}
+						else return;
+					}
 					thisFrame.dispose();
 				}
 			});
