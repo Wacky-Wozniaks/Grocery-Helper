@@ -126,37 +126,14 @@ public class InventoryGUI extends JFrame
 		panel.add(scroll, c);
 		
 		JButton list = new JButton("Create Grocery List");
-		list.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
+		list.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
 				groceries = inventory.getGroceryList();
-				if(groceries.size() == 0)
-				{
+				if(groceries.size() == 0) {
 					JOptionPane.showMessageDialog(panel, "No groceries need to be purchased.", "No List Created", JOptionPane.PLAIN_MESSAGE);
 					return;
 				}
-				Box items = Box.createVerticalBox();
-				for(Item i: groceries)
-				{
-					items.add(new JLabel(i + " - " + i.amountToBuy()));
-				}
-				JButton update = new JButton("Add to Inventory");
-				update.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent arg0)
-					{
-						for(Item i: groceries)
-						{
-							i.setQuantity(i.getMax());
-						}
-					}
-				});
-				items.add(update);
-				JFrame frame = new JFrame();
-				frame.add(items);
-				frame.pack();
-				frame.setVisible(true);
+				new GroceryListGUI(groceries);
 			}
 		});
 		c.gridy++;
@@ -165,6 +142,7 @@ public class InventoryGUI extends JFrame
 		add(panel);
 		pack();
 		setVisible(true);
+		this.setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.requestFocus(); //makes the frame get the focus
 	}
@@ -265,6 +243,7 @@ public class InventoryGUI extends JFrame
 					thisFrame.dispose();
 				}
 			});
+			
 			g.gridy++;
 			g.gridx = 0;
 			addPanel.add(add, g);
