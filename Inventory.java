@@ -133,9 +133,11 @@ public class Inventory extends Observable {
 	 * 
 	 * @param item The item to be added.
 	 */
-	public void add(Item item)
+	public boolean add(Item item)
 	{
+		if(inventory.containsKey(item.getName().toLowerCase())) return false;
 		inventory.put(item.toString().toLowerCase(), item);
+		return true;
 	}
 	
 	/**
