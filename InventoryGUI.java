@@ -16,6 +16,8 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.Box;
 import javax.swing.Box.Filler;
@@ -29,7 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-public class InventoryGUI extends JFrame
+public class InventoryGUI extends JPanel implements Observer
 {
 	private static final String GHOST_TEXT = "Search Inventory...";
 	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
@@ -70,10 +72,7 @@ public class InventoryGUI extends JFrame
 					if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
 					else i.getGUI().setVisible(false);
 				}
-				if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
-					b.remove(b.getComponentCount() - 1); //removes the rigid box
-				if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
-					b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
+				changeBox();
 			}
 		});
 		
@@ -94,9 +93,7 @@ public class InventoryGUI extends JFrame
 					bar.setText(GHOST_TEXT);
 				}
 			}
-		});
-		
-		
+		});		
 		
 		//Adds items to the inventory 
 		JButton add = new JButton("Add Item");
@@ -140,10 +137,6 @@ public class InventoryGUI extends JFrame
 		panel.add(list, c);
 		
 		add(panel);
-		pack();
-		setVisible(true);
-		this.setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.requestFocus(); //makes the frame get the focus
 	}
 	
@@ -251,5 +244,34 @@ public class InventoryGUI extends JFrame
 			pack();
 			setVisible(true);
 		}
+	}
+	
+	/**
+	 * Updates based on the inventory's changes
+	 * 
+	 * @param arg0 The observable object.
+	 * @param arg1 An argument passed to the notifyObservers method.
+	 */
+	public void update(Observable arg0, Object arg1)
+	{
+		if(arg1 != null)
+		{
+			b.add(((Item) arg1).getGUI());
+			changeBox();
+			b.setVisible(true);
+		}
+	}
+	
+	/**
+	 * Changes the box with the item options.
+	 */
+	private void changeBox()
+	{
+		//if there is a rigid box
+		if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) 	
+			b.remove(b.getComponentCount() - 1); //removes the rigid box
+		if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
+			b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
+
 	}
 }

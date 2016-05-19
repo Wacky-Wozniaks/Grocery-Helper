@@ -27,8 +27,8 @@ public class Controller
 	public static void main(String[] args) throws IOException
 	{
 		inventories = importInventories();
-		new InventoryGUI(inventories.get(0));
-		
+		//new InventoryGUI(inventories.get(0));
+		new GUI(inventories);
 		/*
 		 * Sets so that whenever the user quits the program the following code is run.
 		 * This code exports all the inventories then the list of inventories so that they

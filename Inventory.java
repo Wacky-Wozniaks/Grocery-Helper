@@ -23,6 +23,7 @@ public class Inventory extends Observable {
 	private String name;
 	private String fileName;
 	private File file;
+	private InventoryGUI gui;
 	
 	/**
 	 * Represents an inventory of items initialized with the given items.
@@ -40,6 +41,8 @@ public class Inventory extends Observable {
 		this.name = name;
 		fileName = name + EXTENSION;
 		file = new File(fileName);
+		//gui = new InventoryGUI(this);
+		//addObserver(gui);
 	}
 	
 	/**
@@ -52,6 +55,8 @@ public class Inventory extends Observable {
 		this.name = name;
 		fileName = name + EXTENSION;
 		file = new File(fileName);
+		//gui = new InventoryGUI(this);
+		//addObserver(gui);
 	}
 	
 	/**
@@ -112,8 +117,7 @@ public class Inventory extends Observable {
 		while(scan.hasNextLine()) {
 			String line = scan.nextLine();
 			String[] item = line.split(",");
-			inventory.put(item[0].toLowerCase(), new Item(item[0], Integer.parseInt(item[1]), Integer.parseInt(item[2]), Integer.parseInt(item[3]),
-					Integer.parseInt(item[4])));
+			add(new Item(item[0], Integer.parseInt(item[1]), Integer.parseInt(item[2]), Integer.parseInt(item[3]), Integer.parseInt(item[4])));
 		}
 		scan.close();
 	}
@@ -137,6 +141,8 @@ public class Inventory extends Observable {
 	{
 		if(inventory.containsKey(item.getName().toLowerCase())) return false;
 		inventory.put(item.toString().toLowerCase(), item);
+		setChanged();
+		notifyObservers(item);
 		return true;
 	}
 	
@@ -162,5 +168,20 @@ public class Inventory extends Observable {
 		i.updateQuantity(item.getQuantity());
 		i.setMax(item.getMax());
 		i.setMin(item.getMin());
+	}
+	
+	/**
+	 * Returns the GUI for this inventory.
+	 * 
+	 * @return The InventoryGUI for this inventory.
+	 */
+	public InventoryGUI getGUI()
+	{
+		if(gui == null)
+		{
+			gui = new InventoryGUI(this);
+			addObserver(gui);
+		}
+		return gui;
 	}
 }
