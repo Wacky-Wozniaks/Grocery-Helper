@@ -96,6 +96,7 @@ public class GUI extends JFrame
 		 */
 		public InventoryButton(Inventory i)
 		{
+			inventory = i;
 			setBorder(BorderFactory.createCompoundBorder(new LineBorder(Color.BLACK, 1, true), new EmptyBorder(2, 2, 2, 2)));
 			setBackground(Color.WHITE);
 			add(new JLabel(i.getName()));
