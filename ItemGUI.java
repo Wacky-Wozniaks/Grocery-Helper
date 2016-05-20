@@ -7,6 +7,7 @@
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -124,7 +125,10 @@ public class ItemGUI extends JPanel
 		c.gridx = 0;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		
-		panel.add(new JLabel(item.getName()), c);
+		JLabel n = new JLabel(item.getName());
+		Font font = n.getFont();
+		n.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
+		panel.add(n, c);
 		c.gridy++;
 		
 		JPanel updateQ = new JPanel();
