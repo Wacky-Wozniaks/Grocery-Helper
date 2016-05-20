@@ -10,6 +10,7 @@ public class Item implements Comparable<Item>
 	private int quantity, min, max, code;
 	private String name;
 	private ItemGUI gui;
+	private Inventory inventory;
 	
 	/**
 	 * Creates an item given all of its instance variables.
@@ -20,13 +21,14 @@ public class Item implements Comparable<Item>
 	 * @param quantity The number of items currently in inventory
 	 * @param code The item code; -1 if no code
 	 */
-	public Item(String name, int min, int max, int quantity, int code)
+	public Item(String name, int min, int max, int quantity, int code, Inventory inventory)
 	{
 		this.name = name;
 		this.min = min;
 		this.max = max;
 		this.quantity = quantity;
 		this.code = code;
+		this.inventory = inventory;
 		gui = new ItemGUI(this);
 	}
 	
@@ -38,9 +40,9 @@ public class Item implements Comparable<Item>
 	 * @param max The maximum acceptable balance of items
 	 * @param quantity The number of items currently in inventory
 	 */
-	public Item(String name, int min, int max, int quantity)
+	public Item(String name, int min, int max, int quantity, Inventory inventory)
 	{
-		this(name, min, max, quantity, -1);
+		this(name, min, max, quantity, -1, inventory);
 	}
 	
 	/**
@@ -50,9 +52,9 @@ public class Item implements Comparable<Item>
 	 * @param min The minimum acceptable balance of items
 	 * @param max The maximum acceptable balance of items
 	 */
-	public Item(String name, int min, int max)
+	public Item(String name, int min, int max, Inventory inventory)
 	{
-		this(name, min, max, 0, -1);
+		this(name, min, max, 0, -1, inventory);
 	}
 
 	/**
@@ -164,6 +166,24 @@ public class Item implements Comparable<Item>
 	public void updateQuantity(int change)
 	{
 		quantity += change;
+	}
+	
+	/**
+	 * Returns the inventory that the Item is a part of
+	 * 
+	 * @return the inventory that the Item is a part of
+	 */
+	public Inventory getInventory() {
+		return inventory;
+	}
+	
+	/**
+	 * sets the inventory
+	 * 
+	 * @param inventory The inventory to add this item to
+	 */
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
 	}
 	
 	/**
