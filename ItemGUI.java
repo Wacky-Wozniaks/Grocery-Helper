@@ -186,7 +186,7 @@ public class ItemGUI extends JPanel
 					int maximum = Integer.parseInt(max.getText());
 					
 					if (maximum < minimum) {
-						JOptionPane.showMessageDialog(panel, "The Maximum Limit must be greater than or equal to the Minimum Limit.", "", JOptionPane.ERROR_MESSAGE, null);
+						JOptionPane.showMessageDialog(frame, "The Maximum Limit must be greater than or equal to the Minimum Limit.", "", JOptionPane.ERROR_MESSAGE, null);
 						return;
 					}
 					
