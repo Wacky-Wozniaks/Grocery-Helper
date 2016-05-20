@@ -206,6 +206,7 @@ public class ItemGUI extends JPanel
 		
 		frame = new JFrame();
 		frame.add(panel);
+		frame.setResizable(false);
 		frame.setSize(300, 200);
 	}
 	

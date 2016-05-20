@@ -243,6 +243,8 @@ public class InventoryGUI extends JPanel implements Observer
 				}
 			});
 			
+			this.setResizable(false);
+			
 			g.gridy++;
 			g.gridx = 0;
 			addPanel.add(add, g);
