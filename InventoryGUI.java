@@ -168,7 +168,7 @@ public class InventoryGUI extends JPanel implements Observer
 			addPanel.add(name, g);
 			
 			//If there is something in the search field, fills that in as the name of the item
-			if(!bar.getText().trim().equals("")) name.setText(bar.getText());
+			if(!bar.getText().equals(GHOST_TEXT)) name.setText(bar.getText());
 			
 			intVals = new JTextField[VALUES.length];
 			for(int index = 0; index < VALUES.length; index++)
