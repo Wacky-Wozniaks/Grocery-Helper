@@ -194,6 +194,7 @@ public class ItemGUI extends JPanel
 					item.setMax(Integer.parseInt(max.getText()));
 					if(item.moreNeeded()) name.setForeground(Color.RED);
 					else name.setForeground(Color.BLACK);
+					frame.setVisible(false);
 				}
 				catch(Throwable e)
 				{
