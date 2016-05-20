@@ -182,6 +182,14 @@ public class ItemGUI extends JPanel
 			{
 				try
 				{
+					int minimum = Integer.parseInt(min.getText());
+					int maximum = Integer.parseInt(max.getText());
+					
+					if (maximum < minimum) {
+						JOptionPane.showMessageDialog(panel, "The Maximum Limit must be greater than or equal to the Minimum Limit.", "", JOptionPane.ERROR_MESSAGE, null);
+						return;
+					}
+					
 					item.setMin(Integer.parseInt(min.getText()));
 					item.setMax(Integer.parseInt(max.getText()));
 					if(item.moreNeeded()) name.setForeground(Color.RED);

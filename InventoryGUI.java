@@ -211,6 +211,12 @@ public class InventoryGUI extends JPanel implements Observer
 					//Constructs the item and adds it to the inventory
 					Item i = new Item(n, values[1], values[2], values[0]);
 					
+					//Inform the user if the maximum quantity is set to smaller than the minimum quantity
+					if (values[2] < values[1]) {
+						JOptionPane.showMessageDialog(addPanel, VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".", "", JOptionPane.ERROR_MESSAGE, null);
+						return;
+					}
+					
 					//If the item already exists in the inventory, gives the option to merge the two values.
 					if(inventory.add(i))
 					{
