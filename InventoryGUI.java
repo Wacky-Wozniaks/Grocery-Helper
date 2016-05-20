@@ -2,7 +2,7 @@
  * The GUI for an inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/18/2016
+ * @version 05/20/2016
  */
 
 import java.awt.Color;
@@ -270,7 +270,12 @@ public class InventoryGUI extends JPanel implements Observer
 				changeBox();
 				b.setVisible(true);
 			}
-			else b.remove(((Item) arg1).getGUI());
+			else
+			{
+				b.setVisible(false);
+				b.remove(((Item) arg1).getGUI());
+				b.setVisible(true);
+			}
 		}
 	}
 	

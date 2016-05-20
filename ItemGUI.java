@@ -2,7 +2,7 @@
  * The button and information panel for an item.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/18/2016
+ * @version 05/20/2016
  */
 
 import java.awt.BorderLayout;
@@ -211,6 +211,7 @@ public class ItemGUI extends JPanel
 			public void actionPerformed(ActionEvent arg0)
 			{
 				item.getInventory().remove(item);
+				frame.dispose();
 			}
 		});
 		panel.add(remove, c);

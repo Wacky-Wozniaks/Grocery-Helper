@@ -2,7 +2,7 @@
  * Represents an item to be stored in the inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/15/2016
+ * @version 05/20/2016
  */
 
 public class Item implements Comparable<Item>

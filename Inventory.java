@@ -2,7 +2,7 @@
  * Represents the inventory in a binary search tree
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/15/2016
+ * @version 05/20/2016
  */
 
 import java.io.File;
@@ -192,7 +192,7 @@ public class Inventory extends Observable {
 	 */
 	public void remove(Item item)
 	{
-		remove(item);
+		inventory.remove(item.getName().toLowerCase());
 		setChanged();
 		notifyObservers(item);
 	}
