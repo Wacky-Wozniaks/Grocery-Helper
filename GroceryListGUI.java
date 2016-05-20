@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -40,6 +41,7 @@ import javax.naming.*;
 public class GroceryListGUI extends JFrame {
 	
 	private static final Dimension SCROLL_PANEL_SIZE = new Dimension(200, 300);
+	private String pw;
 	
 	public GroceryListGUI(final List<Item> groceries) {
 		super("Grocery List");
@@ -146,16 +148,27 @@ public class GroceryListGUI extends JFrame {
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.port", "465");
 		
+		File file = new File("email.compsci");
+		pw = "";
+		try {
+			Scanner scan = new Scanner(file);
+			pw = scan.nextLine();
+		}
+		catch (Throwable e) {
+			JOptionPane.showMessageDialog(null, "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
 		Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication("hschoi9898","testForJava");
+					return new PasswordAuthentication("MXShoppingList", pw);
 				}
 		});
 
 			
 		try {
 			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress("hschoi9898@gmail.com"));
+			message.setFrom(new InternetAddress("MXShoppingList@gmail.com"));
 			message.setRecipients(Message.RecipientType.TO,
 					InternetAddress.parse(emailAddr));
 			message.setSubject("Your Shopping List");
