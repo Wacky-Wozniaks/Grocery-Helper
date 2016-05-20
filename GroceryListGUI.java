@@ -5,11 +5,20 @@
  * @version 05/15/2016
  */
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -132,6 +141,41 @@ public class GroceryListGUI extends JFrame {
 		});
 		panel.add(email, c);
 		
+		
+		//adding email button
+		c.gridy++;
+		JButton print = new JButton("Print");
+		print.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					
+					
+					String list = "Your shopping list generated at ";
+					list += new SimpleDateFormat("h:mm a 'on' MM/dd/yyyy").format(new java.util.Date());
+					list += ":\n";
+					for (Item i: groceries) {
+						list += i.getName() + " : " + i.amountToBuy() + "\n";
+					}
+					
+					PrinterJob job = PrinterJob.getPrinterJob();
+					
+					job.setPrintable(new PrintedPage(list, job));
+					
+					if (job.printDialog()) {
+						job.print();
+						JOptionPane.showMessageDialog(null, "Sent to printer!", "Printer Job Sent", JOptionPane.INFORMATION_MESSAGE);
+						return;
+						
+					}
+				} 
+				catch (Throwable e1) {
+					JOptionPane.showMessageDialog(null, "Print failed!", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+			}
+		});
+		panel.add(print, c);
+		
 		this.add(panel);
 		this.pack();
 		this.setResizable(false);
@@ -165,7 +209,7 @@ public class GroceryListGUI extends JFrame {
 				}
 		});
 
-			
+		
 		try {
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress("MXShoppingList@gmail.com"));
@@ -196,4 +240,65 @@ public class GroceryListGUI extends JFrame {
 		}
 		return true;
 	}
+	
+	private class PrintedPage implements Printable {
+
+		private String printString;
+		private PrinterJob job;
+		
+		//Letter size paper, units in inches
+		private final double PAPERWIDTH = 8.5;
+		private final double PAPERHEIGHT = 11;
+		
+		//1 inch = 72 pixels
+		private final double INCHTOPIXELS = 72; 
+		
+		public PrintedPage(String printString, PrinterJob job) {
+			this.printString = printString;
+			this.job = job;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.awt.print.Printable#print(java.awt.Graphics, java.awt.print.PageFormat, int)
+		 */
+		public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
+				throws PrinterException {
+			
+			
+			
+			PageFormat format = job.defaultPage();
+			Paper paper = new Paper();
+			
+			paper.setSize(PAPERWIDTH * INCHTOPIXELS, PAPERHEIGHT * INCHTOPIXELS); //72 pixels per inch
+			
+			//1 inch margins
+			paper.setImageableArea(INCHTOPIXELS, INCHTOPIXELS, paper.getWidth() - INCHTOPIXELS*2, paper.getHeight() - INCHTOPIXELS*2);
+			format.setPaper(paper);
+			
+			job.setPrintable(this, format);
+			
+			
+			if (pageIndex != 0) {
+				return NO_SUCH_PAGE;
+			}
+			
+			Graphics2D content = (Graphics2D) graphics;
+			content.setFont(new Font("Serif", Font.PLAIN, 14));
+			content.setPaint(Color.black);
+			
+			
+			//what the parameters are (for drawString inside the for loop):
+			//drawString(ONE LINE, LEFT MARGIN (1 INCH), VERTICAL MARGIN INCREMENTED EACH LINE
+			int vertMargin = (int) INCHTOPIXELS;
+			for (String line : printString.split("\n")) {
+		        content.drawString(line, (int) INCHTOPIXELS, vertMargin+= content.getFontMetrics().getHeight());
+			}
+			
+			return PAGE_EXISTS;
+		}
+		
+	}
+	
+	
+	
 }
