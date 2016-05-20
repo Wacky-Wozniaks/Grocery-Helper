@@ -117,7 +117,7 @@ public class Inventory extends Observable {
 		while(scan.hasNextLine()) {
 			String line = scan.nextLine();
 			String[] item = line.split(",");
-			add(new Item(item[0], Integer.parseInt(item[1]), Integer.parseInt(item[2]), Integer.parseInt(item[3]), Integer.parseInt(item[4])));
+			add(new Item(item[0], Integer.parseInt(item[1]), Integer.parseInt(item[2]), Integer.parseInt(item[3]), Integer.parseInt(item[4]), this));
 		}
 		scan.close();
 	}
@@ -183,5 +183,28 @@ public class Inventory extends Observable {
 			addObserver(gui);
 		}
 		return gui;
+	}
+	
+	/**
+	 * Removes an item from the inventory.
+	 * 
+	 * @param item The item to remove.
+	 */
+	public void remove(Item item)
+	{
+		remove(item);
+		setChanged();
+		notifyObservers(item);
+	}
+	
+	/**
+	 * Returns whether the inventory contains that item.
+	 * 
+	 * @param item The item to check for.
+	 * @return Whether the inventory contains the item.
+	 */
+	public boolean contains(Item item)
+	{
+		return inventory.containsValue(item);
 	}
 }

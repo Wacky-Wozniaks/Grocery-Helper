@@ -209,7 +209,7 @@ public class InventoryGUI extends JPanel implements Observer
 					}
 					
 					//Constructs the item and adds it to the inventory
-					Item i = new Item(n, values[1], values[2], values[0]);
+					Item i = new Item(n, values[1], values[2], values[0], inventory);
 					
 					//Inform the user if the maximum quantity is set to smaller than the minimum quantity
 					if (values[2] < values[1]) {
@@ -264,9 +264,13 @@ public class InventoryGUI extends JPanel implements Observer
 	{
 		if(arg1 != null)
 		{
-			b.add(((Item) arg1).getGUI());
-			changeBox();
-			b.setVisible(true);
+			if(inventory.contains((Item) arg1))
+			{
+				b.add(((Item) arg1).getGUI());
+				changeBox();
+				b.setVisible(true);
+			}
+			else b.remove(((Item) arg1).getGUI());
 		}
 	}
 	

@@ -204,10 +204,21 @@ public class ItemGUI extends JPanel
 		});
 		panel.add(update, c);
 		
+		c.gridy++;
+		JButton remove = new JButton("Remove Item");
+		remove.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				item.getInventory().remove(item);
+			}
+		});
+		panel.add(remove, c);
+		
 		frame = new JFrame();
 		frame.add(panel);
 		frame.setResizable(false);
-		frame.setSize(300, 200);
+		frame.setSize(300, 225);
 	}
 	
 	/**
