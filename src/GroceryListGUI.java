@@ -46,12 +46,17 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.naming.*;
 
+import org.docx4j.Docx4J;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+
 
 
 public class GroceryListGUI extends JFrame {
 	
 	private static final Dimension SCROLL_PANEL_SIZE = new Dimension(200, 300);
 	private String pw;
+	private String listString;
 	
 	public GroceryListGUI(final List<Item> groceries) {
 		super("Grocery List");
@@ -72,13 +77,21 @@ public class GroceryListGUI extends JFrame {
 		scroll.setPreferredSize(SCROLL_PANEL_SIZE);
 		panel.add(scroll, c);
 		
+		//create String that represents a readable representation of the shopping list
+		listString = "Your shopping list generated at ";
+		listString += new SimpleDateFormat("h:mm a 'on' MM/dd/yyyy").format(new java.util.Date());
+		listString += ":\n";
+		for (Item i: groceries) {
+			listString += i.getName() + " : " + i.amountToBuy() + "\n";
+		}
+		
 		//adding export button
 		c.gridy++;
 		JButton export = new JButton("Export");
 		export.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				//chooser.addChoosableFileFilter(new FileNameExtensionFilter("Microsoft Word Document (.docx)","docx"));
+				chooser.addChoosableFileFilter(new FileNameExtensionFilter("Microsoft Word Document (.docx)","docx"));
 				chooser.addChoosableFileFilter(new FileNameExtensionFilter("Plain Text Document (.txt)","txt"));
 				chooser.setAcceptAllFileFilterUsed(false);
 				int option = chooser.showSaveDialog(null);
@@ -86,15 +99,22 @@ public class GroceryListGUI extends JFrame {
 					PrintWriter writer = null;
 					try {
 						File file = chooser.getSelectedFile();
-						if(file.getName().lastIndexOf(".txt") != file.getName().length() - 4) {
-							JOptionPane.showMessageDialog(null, "\".txt\" entension required!", "Error", JOptionPane.ERROR_MESSAGE);
+						if (file.getName().lastIndexOf(".docx") == file.getName().length() - 5) {
+							writeToDocx(listString, file);
+							return; //if an exception is thrown, it will be caught below and display an error message
+							
+						}
+						else if(file.getName().lastIndexOf(".txt") != file.getName().length() - 4) { //if NOT docx NOR txt export
+							JOptionPane.showMessageDialog(null, "\".txt\" or \".docx\" extension required!", "Error", JOptionPane.ERROR_MESSAGE);
 							return;
 						}
+						
+						//write text file
 						file.createNewFile();
 						writer = new PrintWriter(file);
 						for(Item i: groceries) writer.println(i.getName() + " : " + i.amountToBuy());
 						writer.close();
-					} catch (IOException e1) {
+					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(null, "Error in Saving", "Error", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
@@ -124,16 +144,10 @@ public class GroceryListGUI extends JFrame {
 						throw new IllegalArgumentException();
 					}
 					
-					String list = "Your shopping list generated at ";
-					list += new SimpleDateFormat("h:mm a 'on' MM/dd/yyyy").format(new java.util.Date());
-					list += ":\n";
-					for (Item i: groceries) {
-						list += i.getName() + " : " + i.amountToBuy() + "\n";
-					}
 					
-					if (!sendEmail(emailAddr, list)) { //attempt to send the email here
+					if (!sendEmail(emailAddr, listString)) { //attempt to send the email
 						sending.dispose();
-						throw new RuntimeException();
+						throw new RuntimeException(); //if email doesn't go through, throw an exception
 					}
 					else {
 						sending.dispose();
@@ -162,18 +176,9 @@ public class GroceryListGUI extends JFrame {
 		print.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					
-					
-					String list = "Your shopping list generated at ";
-					list += new SimpleDateFormat("h:mm a 'on' MM/dd/yyyy").format(new java.util.Date());
-					list += ":\n";
-					for (Item i: groceries) {
-						list += i.getName() + " : " + i.amountToBuy() + "\n";
-					}
-					
 					PrinterJob job = PrinterJob.getPrinterJob();
 					
-					job.setPrintable(new PrintedPage(list, job));
+					job.setPrintable(new PrintedPage(listString, job));
 					
 					if (job.printDialog()) {
 						job.print();
@@ -196,7 +201,7 @@ public class GroceryListGUI extends JFrame {
 		this.setVisible(true);
 	}
 	
-	//attempts to send an email, returns the success of such attempt
+	//attempts to send an email, returns whether or not such attempt succeeded
 	private boolean sendEmail(String emailAddr, String list) {
 		
 		Properties props = new Properties();
@@ -253,6 +258,22 @@ public class GroceryListGUI extends JFrame {
 			return false;
 		}
 		return true;
+	}
+	
+	//Reference: https://github.com/plutext/docx4j/blob/master/src/samples/docx4j/org/docx4j/samples/NewDocxHelloWorld.java
+	//attempts to write the given shopping list to a Microsoft Word (.docx) file
+	private void writeToDocx(String list, File file) throws Exception {
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		MainDocumentPart mdp = pkg.getMainDocumentPart();
+		
+		for (String line : list.split("\n")) {
+			mdp.addParagraphOfText(line);
+		}
+		
+		
+		
+		Docx4J.save(pkg, file, Docx4J.FLAG_SAVE_ZIP_FILE);
+		
 	}
 	
 	private class PrintedPage implements Printable {
