@@ -72,7 +72,8 @@ public class InventoryGUI extends JPanel implements Observer
 					if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
 					else i.getGUI().setVisible(false);
 				}
-				changeBox();
+				removeScrollSpace();
+				addScrollSpace();
 			}
 		});
 		
@@ -116,8 +117,7 @@ public class InventoryGUI extends JPanel implements Observer
 		{
 			b.add(i.getGUI());
 		}
-		if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over
-			b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
+		addScrollSpace();
 		JScrollPane scroll = new JScrollPane(b, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setPreferredSize(new Dimension(upperBar.getPreferredSize().width, SCROLL_PANEL_HEIGHT));
 		panel.add(scroll, c);
@@ -223,8 +223,7 @@ public class InventoryGUI extends JPanel implements Observer
 					//If the item already exists in the inventory, gives the option to merge the two values.
 					if(inventory.add(i))
 					{
-						if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
-							b.remove(b.getComponentCount() - 1); //removes the rigid box
+						removeScrollSpace();
 						b.add(i.getGUI());
 						if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
 							b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
@@ -269,29 +268,36 @@ public class InventoryGUI extends JPanel implements Observer
 		{
 			if(inventory.contains((Item) arg1))
 			{
+				removeScrollSpace();
 				b.add(((Item) arg1).getGUI());
-				changeBox();
+				addScrollSpace();
 				b.setVisible(true);
 			}
 			else
 			{
 				b.setVisible(false);
+				removeScrollSpace();
 				b.remove(((Item) arg1).getGUI());
+				addScrollSpace();
 				b.setVisible(true);
 			}
 		}
 	}
 	
 	/**
-	 * Changes the box with the item options.
+	 * If there is a RigidSpace in the ScrollPane, it removes it.
 	 */
-	private void changeBox()
-	{
-		//if there is a rigid box
-		if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) 	
+	private void removeScrollSpace() {
+		if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
 			b.remove(b.getComponentCount() - 1); //removes the rigid box
+	}
+	
+	/**
+	 * If a RigidSpace in the ScrollPane, it adds it.
+	 */
+	private void addScrollSpace() {
 		if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
 			b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
-
 	}
+	
 }
