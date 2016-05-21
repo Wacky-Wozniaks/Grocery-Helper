@@ -140,6 +140,7 @@ public class Inventory extends Observable {
 	public boolean add(Item item)
 	{
 		if(inventory.containsKey(item.getName().toLowerCase())) return false;
+		Operation.addToUndo(new Operation(item, Operation.ADDED));
 		inventory.put(item.toString().toLowerCase(), item);
 		setChanged();
 		notifyObservers(item);
@@ -192,6 +193,7 @@ public class Inventory extends Observable {
 	 */
 	public void remove(Item item)
 	{
+		Operation.addToUndo(new Operation(item, Operation.REMOVED));
 		inventory.remove(item.getName().toLowerCase());
 		setChanged();
 		notifyObservers(item);

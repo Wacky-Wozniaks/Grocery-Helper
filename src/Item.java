@@ -74,6 +74,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void setMin(int min)
 	{
+		Operation.addToUndo(new Operation(this, Operation.MIN_CHANGE, this.min));
 		this.min = min;
 	}
 
@@ -94,6 +95,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void setMax(int max)
 	{
+		Operation.addToUndo(new Operation(this, Operation.MAX_CHANGE, this.max));
 		this.max = max;
 	}
 
@@ -154,6 +156,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void setQuantity(int quantity)
 	{
+		Operation.addToUndo(new Operation(this, Operation.QUANTITY_CHANGE, this.quantity));
 		this.quantity = quantity;
 		gui.updateQuantity();
 	}
@@ -165,6 +168,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void updateQuantity(int change)
 	{
+		Operation.addToUndo(new Operation(this, Operation.QUANTITY_CHANGE, this.quantity));
 		quantity += change;
 	}
 	
