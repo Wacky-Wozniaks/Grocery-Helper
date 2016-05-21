@@ -30,6 +30,7 @@ import java.util.Scanner;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -79,6 +80,7 @@ public class GroceryListGUI extends JFrame {
 				JFileChooser chooser = new JFileChooser();
 				//chooser.addChoosableFileFilter(new FileNameExtensionFilter("Microsoft Word Document (.docx)","docx"));
 				chooser.addChoosableFileFilter(new FileNameExtensionFilter("Plain Text Document (.txt)","txt"));
+				chooser.setAcceptAllFileFilterUsed(false);
 				int option = chooser.showSaveDialog(null);
 				if(option == JFileChooser.APPROVE_OPTION) {
 					PrintWriter writer = null;
@@ -106,9 +108,19 @@ public class GroceryListGUI extends JFrame {
 		JButton email = new JButton("Email");
 		email.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//JOptionPane sending;
+				JDialog sending;
 				try {
-					String emailAddr = (String) JOptionPane.showInputDialog(null, "Enter your email address:", "Email My Shopping List", JOptionPane.PLAIN_MESSAGE);
+					String emailAddr = (String) JOptionPane.showInputDialog(null, "Enter your email address:",
+							"Email My Shopping List", JOptionPane.PLAIN_MESSAGE);
+					sending = new JDialog((JFrame) null, "Grocery List", false);
+					sending.add(new JLabel("Sending..."));
+					sending.setLocationRelativeTo(null);
+					sending.setPreferredSize(new Dimension(300, 150));
+					sending.pack();
+					sending.setVisible(true);
 					if (!isValidEmail(emailAddr)) {
+						sending.dispose();
 						throw new IllegalArgumentException();
 					}
 					
@@ -120,9 +132,11 @@ public class GroceryListGUI extends JFrame {
 					}
 					
 					if (!sendEmail(emailAddr, list)) { //attempt to send the email here
+						sending.dispose();
 						throw new RuntimeException();
 					}
 					else {
+						sending.dispose();
 						JOptionPane.showMessageDialog(null, "Email sent!", "Emailed list", JOptionPane.INFORMATION_MESSAGE);
 						return;
 					}
@@ -272,7 +286,8 @@ public class GroceryListGUI extends JFrame {
 			paper.setSize(PAPERWIDTH * INCHTOPIXELS, PAPERHEIGHT * INCHTOPIXELS); //72 pixels per inch
 			
 			//1 inch margins
-			paper.setImageableArea(INCHTOPIXELS, INCHTOPIXELS, paper.getWidth() - INCHTOPIXELS*2, paper.getHeight() - INCHTOPIXELS*2);
+			paper.setImageableArea(INCHTOPIXELS, INCHTOPIXELS, paper.getWidth() - INCHTOPIXELS*2,
+					paper.getHeight() - INCHTOPIXELS*2);
 			format.setPaper(paper);
 			
 			job.setPrintable(this, format);
