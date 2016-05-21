@@ -2,7 +2,7 @@
  * The GUI for an inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/20/2016
+ * @version 05/21/2016
  */
 
 import java.awt.Color;
@@ -22,8 +22,6 @@ import java.util.Observer;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -102,7 +100,9 @@ public class InventoryGUI extends JPanel implements Observer
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				new AddFrame();
+				//Creates an add frame, and if there is something in the search bar, enters that to be displayed as the name of the new item.
+				if(!bar.getText().equals(GHOST_TEXT)) new AddFrame(inventory, bar.getText());
+				else new AddFrame(inventory, "");
 			}
 		});
 		
@@ -140,121 +140,7 @@ public class InventoryGUI extends JPanel implements Observer
 		this.requestFocus(); //makes the frame get the focus
 	}
 	
-	/**
-	 * A private inner class for the frame that allows the addition of a new item to the inventory
-	 */
-	private class AddFrame extends JFrame
-	{
-		public final String[] VALUES = {"Quantity", "Minimum Limit", "Maximum Limit"};
-		private JTextField name;
-		private JTextField[] intVals;
-		private JPanel addPanel;
-		
-		/**
-		 * Creates the frame.
-		 */
-		public AddFrame()
-		{
-			super("Add Item");
-			//The panel contains textfields for name, quantity, and min and max limits.
-			addPanel = new JPanel(new GridBagLayout());
-			GridBagConstraints g = new GridBagConstraints();
-			g.gridy = 0;
-			g.gridx = 0;
-			g.anchor = GridBagConstraints.WEST;
-			addPanel.add(new JLabel(" Name"), g);
-			g.gridx++;
-			name = new JTextField(10);
-			addPanel.add(name, g);
-			
-			//If there is something in the search field, fills that in as the name of the item
-			if(!bar.getText().equals(GHOST_TEXT)) name.setText(bar.getText());
-			
-			intVals = new JTextField[VALUES.length];
-			for(int index = 0; index < VALUES.length; index++)
-			{
-				g.gridx = 0;
-				g.gridy++;
-				addPanel.add(new JLabel(" " + VALUES[index] + " "), g);
-				g.gridx++;
-				intVals[index] = new JTextField(10);
-				addPanel.add(intVals[index], g);
-			}
-			
-			//Once the button is pressed, it will add the item to the inventory
-			JButton add = new JButton("Add");
-			final JFrame thisFrame = this; //I need this so I can dispose it at the end of the action listener
-			add.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent arg0)
-				{
-					//Tests that the name is not an empty string.
-					String n = name.getText();
-					if(n.trim().equals(""))
-					{
-						JOptionPane.showMessageDialog(addPanel, "Invalid item name.", "", JOptionPane.ERROR_MESSAGE, null);
-						return;
-					}
-					
-					//Tests that each input is a number
-					int[] values = new int[intVals.length];
-					for(int index = 0; index < intVals.length; index++)
-					{
-						try
-						{
-							values[index] = Integer.parseInt(intVals[index].getText());
-						}
-						catch(Throwable e)
-						{
-							JOptionPane.showMessageDialog(addPanel, VALUES[index] + " must be an integer.", "", JOptionPane.ERROR_MESSAGE, null);
-							return;
-						}
-					}
-					
-					//Constructs the item and adds it to the inventory
-					Item i = new Item(n, values[1], values[2], values[0], inventory);
-					
-					//Inform the user if the maximum quantity is set to smaller than the minimum quantity
-					if (values[2] < values[1]) {
-						JOptionPane.showMessageDialog(addPanel, VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".", "", JOptionPane.ERROR_MESSAGE, null);
-						return;
-					}
-					
-					//If the item already exists in the inventory, gives the option to merge the two values.
-					if(inventory.add(i))
-					{
-						removeScrollSpace();
-						b.add(i.getGUI());
-						if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
-							b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
-					}
-					else
-					{
-						int merge = JOptionPane.showConfirmDialog(addPanel, "<html>" + n + " already exists in this inventory with quantity " + 
-								inventory.get(n).getQuantity() + ".<br>" + "Would you like to merge the items?", "Item Already Exists", 
-								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-						if(merge == JOptionPane.YES_OPTION)
-						{
-							inventory.merge(i);
-							inventory.get(n).getGUI().updateQuantity();
-							
-						}
-						else return;
-					}
-					thisFrame.dispose();
-				}
-			});
-			
-			this.setResizable(false);
-			
-			g.gridy++;
-			g.gridx = 0;
-			addPanel.add(add, g);
-			add(addPanel);
-			pack();
-			setVisible(true);
-		}
-	}
+	
 	
 	/**
 	 * Updates based on the inventory's changes
@@ -287,7 +173,7 @@ public class InventoryGUI extends JPanel implements Observer
 	/**
 	 * If there is a RigidSpace in the ScrollPane, it removes it.
 	 */
-	private void removeScrollSpace() {
+	public void removeScrollSpace() {
 		if(b.getComponent(b.getComponentCount() - 1) instanceof Filler) //if there is a rigid box
 			b.remove(b.getComponentCount() - 1); //removes the rigid box
 	}
@@ -295,8 +181,17 @@ public class InventoryGUI extends JPanel implements Observer
 	/**
 	 * If a RigidSpace in the ScrollPane, it adds it.
 	 */
-	private void addScrollSpace() {
+	public void addScrollSpace() {
 		if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //if there is area left over adds a rigid box
+			b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
+	}
+	
+	/**
+	 * If there is area left over adds a rigid box to the ScrollPane
+	 */
+	public void addBox()
+	{
+		if(SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight() > 0) //
 			b.add(Box.createRigidArea(new Dimension((int) b.getPreferredSize().getWidth(), (int) (SCROLL_PANEL_HEIGHT - b.getPreferredSize().getHeight()))));
 	}
 	
