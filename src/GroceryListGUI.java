@@ -21,7 +21,6 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -41,10 +40,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-import javax.activation.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.naming.*;
 
 import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -53,10 +50,9 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
 
 public class GroceryListGUI extends JFrame {
-	
 	private static final Dimension SCROLL_PANEL_SIZE = new Dimension(200, 300);
 	private String pw;
-	private String listString;
+	private String listString; //The shopping list as a String formatted for human readability
 	
 	public GroceryListGUI(final List<Item> groceries) {
 		super("Grocery List");
@@ -67,7 +63,7 @@ public class GroceryListGUI extends JFrame {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
-		//adding scroll panel with grocery list
+		//Adding scroll panel with grocery list
 		c.gridx = 0;
 		c.gridy = 0;
 		c.fill = GridBagConstraints.CENTER;
@@ -77,7 +73,7 @@ public class GroceryListGUI extends JFrame {
 		scroll.setPreferredSize(SCROLL_PANEL_SIZE);
 		panel.add(scroll, c);
 		
-		//create String that represents a readable representation of the shopping list
+		//Create and store a String that is a readable representation of the shopping list
 		listString = "Your shopping list generated at ";
 		listString += new SimpleDateFormat("h:mm a 'on' MM/dd/yyyy").format(new java.util.Date());
 		listString += ":\n";
@@ -85,7 +81,8 @@ public class GroceryListGUI extends JFrame {
 			listString += i.getName() + " : " + i.amountToBuy() + "\n";
 		}
 		
-		//adding export button
+		//Adding export button
+		//Able to export to either a Micrsoft Word file (.docx) or a plain text file (.txt)
 		c.gridy++;
 		JButton export = new JButton("Export");
 		export.addActionListener(new ActionListener() {
@@ -139,38 +136,35 @@ public class GroceryListGUI extends JFrame {
 					sending.setPreferredSize(new Dimension(300, 150));
 					sending.pack();
 					sending.setVisible(true);
-					if (!isValidEmail(emailAddr)) {
+					
+					if (!isValidEmail(emailAddr)) { //Checks syntactical validity of email address
 						sending.dispose();
 						throw new IllegalArgumentException();
 					}
 					
-					
-					if (!sendEmail(emailAddr, listString)) { //attempt to send the email
+					if (!sendEmail(emailAddr)) { //Attempts to send the email
 						sending.dispose();
-						throw new RuntimeException(); //if email doesn't go through, throw an exception
+						throw new RuntimeException(); //If email doesn't go through, throw an exception
 					}
-					else {
+					else { //Confirms successful sending
 						sending.dispose();
 						JOptionPane.showMessageDialog(null, "Email sent!", "Emailed list", JOptionPane.INFORMATION_MESSAGE);
 						return;
 					}
-					
-					
 				} 
-				catch (RuntimeException e1) { //two different error messages for different cases
-					JOptionPane.showMessageDialog(null, "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
+				catch (IllegalArgumentException e1) { //Error message for invalid email address
+					JOptionPane.showMessageDialog(null, "Invalid email address!", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				catch (Throwable e2) {
-					JOptionPane.showMessageDialog(null, "Invalid email address!", "Error", JOptionPane.ERROR_MESSAGE);
+				catch (Throwable e2) { //Error message for all other sending failures
+					JOptionPane.showMessageDialog(null, "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 			}
 		});
 		panel.add(email, c);
 		
-		
-		//adding email button
+		//adding print button
 		c.gridy++;
 		JButton print = new JButton("Print");
 		print.addActionListener(new ActionListener() {
@@ -178,13 +172,13 @@ public class GroceryListGUI extends JFrame {
 				try {
 					PrinterJob job = PrinterJob.getPrinterJob();
 					
-					job.setPrintable(new PrintedPage(listString, job));
+					//Note: the PrintedPage object (implements Printable) is defined in a private inner class
+					job.setPrintable(new PrintedPage(listString, job)); 
 					
-					if (job.printDialog()) {
+					if (job.printDialog()) { //Display the standard print dialog and attempt to print if valid selection is made
 						job.print();
 						JOptionPane.showMessageDialog(null, "Sent to printer!", "Printer Job Sent", JOptionPane.INFORMATION_MESSAGE);
 						return;
-						
 					}
 				} 
 				catch (Throwable e1) {
@@ -201,9 +195,10 @@ public class GroceryListGUI extends JFrame {
 		this.setVisible(true);
 	}
 	
-	//attempts to send an email, returns whether or not such attempt succeeded
-	private boolean sendEmail(String emailAddr, String list) {
-		
+	//Attempts to send an email, returns whether or not such attempt succeeded
+	//Exception thrown if something goes wrong; these are caught elsewhere
+	private boolean sendEmail(String emailAddr) {
+		//Gmail connection configurations
 		Properties props = new Properties();
 		props.put("mail.smtp.host", "smtp.gmail.com");
 		props.put("mail.smtp.socketFactory.port", "465");
@@ -211,31 +206,32 @@ public class GroceryListGUI extends JFrame {
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.port", "465");
 		
-		File file = new File("email.compsci");
-		pw = "";
+		//Local save file that contains the super secret password to the Gmail account
+		Scanner scan;
 		try {
-			Scanner scan = new Scanner(file);
+			scan = new Scanner(new File("email.compsci"));
 			pw = scan.nextLine();
+			scan.close(); //close the Scanner
 		}
-		catch (Throwable e) {
-			JOptionPane.showMessageDialog(null, "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
+		catch (FileNotFoundException e1) {
 			return false;
 		}
 		
+		//Logs in to the account with given authenticaion information
 		Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication("MXShoppingList", pw);
 				}
 		});
 
-		
+		//Builds the contents of the email and tries to send it
 		try {
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress("MXShoppingList@gmail.com"));
 			message.setRecipients(Message.RecipientType.TO,
 					InternetAddress.parse(emailAddr));
 			message.setSubject("Your Shopping List");
-			message.setText(list);
+			message.setText(listString);
 
 			Transport.send(message);
 		}
@@ -243,16 +239,15 @@ public class GroceryListGUI extends JFrame {
 			return false;
 		}
 		
-		return true; 
-		
-
+		return true;
 	}
 	
-	//checks if a given string is a valid email address
+	//Checks if a given string is a valid email address (syntactically) according to RFC822 standards
+	//True if valid, false if invalid (through a caught exception)
 	private boolean isValidEmail(String s) {
 		try {
 			InternetAddress email = new InternetAddress(s);
-			email.validate();
+			email.validate(); //throws exception if syntactically invalid
 		}
 		catch (Throwable e) {
 			return false;
@@ -261,24 +256,23 @@ public class GroceryListGUI extends JFrame {
 	}
 	
 	//Reference: https://github.com/plutext/docx4j/blob/master/src/samples/docx4j/org/docx4j/samples/NewDocxHelloWorld.java
-	//attempts to write the given shopping list to a Microsoft Word (.docx) file
+	//Attempts to write the given shopping list to a Microsoft Word (.docx) file
 	private void writeToDocx(String list, File file) throws Exception {
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
 		MainDocumentPart mdp = pkg.getMainDocumentPart();
 		
+		//Must add each line separately as a new "paragraph"
+		//because the "\n" line break character is not rendered correctly in this library
 		for (String line : list.split("\n")) {
 			mdp.addParagraphOfText(line);
 		}
 		
-		
-		
-		Docx4J.save(pkg, file, Docx4J.FLAG_SAVE_ZIP_FILE);
-		
+		Docx4J.save(pkg, file, Docx4J.FLAG_SAVE_ZIP_FILE); //save the file
 	}
 	
+	//Private inner class that represents the physical piece of paper that the printer will output
 	private class PrintedPage implements Printable {
-
-		private String printString;
+		private String printString; //the string to be sent to the printer
 		private PrinterJob job;
 		
 		//Letter size paper, units in inches
@@ -292,14 +286,10 @@ public class GroceryListGUI extends JFrame {
 			this.printString = printString;
 			this.job = job;
 		}
-		
-		/* (non-Javadoc)
-		 * @see java.awt.print.Printable#print(java.awt.Graphics, java.awt.print.PageFormat, int)
-		 */
+		 
+		//Reference: http://www.java2s.com/Code/Java/2D-Graphics-GUI/Printabledemo.htm
 		public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
 				throws PrinterException {
-			
-			
 			
 			PageFormat format = job.defaultPage();
 			Paper paper = new Paper();
@@ -313,18 +303,21 @@ public class GroceryListGUI extends JFrame {
 			
 			job.setPrintable(this, format);
 			
-			
 			if (pageIndex != 0) {
 				return NO_SUCH_PAGE;
 			}
 			
+			//setting text style
 			Graphics2D content = (Graphics2D) graphics;
 			content.setFont(new Font("Serif", Font.PLAIN, 14));
 			content.setPaint(Color.black);
 			
-			
-			//what the parameters are (for drawString inside the for loop):
-			//drawString(ONE LINE, LEFT MARGIN (1 INCH), VERTICAL MARGIN INCREMENTED EACH LINE
+			/*
+			 * Parameters for drawString inside the for loop:
+			 * drawString(ONE LINE, LEFT MARGIN (1 INCH), VERTICAL MARGIN INCREMENTED EACH LINE)
+			 * This basically adds the shopping listline by line because the API
+			 * doesn't support the "\n" linebreak character
+			 */
 			int vertMargin = (int) INCHTOPIXELS;
 			for (String line : printString.split("\n")) {
 		        content.drawString(line, (int) INCHTOPIXELS, vertMargin+= content.getFontMetrics().getHeight());
