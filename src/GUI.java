@@ -8,6 +8,8 @@
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -92,7 +94,15 @@ public class GUI extends JFrame
 		
 		JMenu file = new JMenu("File");
 		JMenu newMenu = new JMenu("New");
-		newMenu.add(new JMenuItem("Inventory"));
+		JMenuItem inventory = new JMenuItem("Inventory");
+		inventory.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				
+			}
+		});
+		newMenu.add(inventory);
 		newMenu.add(new JMenuItem("Item"));
 		file.add(newMenu);
 		file.add(new JMenuItem("Export"));
@@ -100,8 +110,24 @@ public class GUI extends JFrame
 		menu.add(file);
 		
 		JMenu edit = new JMenu("Edit");
-		edit.add(new JMenuItem("Undo"));
-		edit.add(new JMenuItem("Redo"));
+		JMenuItem undo = new JMenuItem("Undo");
+		undo.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if(Operation.canUndo()) Operation.undoLast();
+			}
+		});
+		edit.add(undo);
+		JMenuItem redo = new JMenuItem("Redo");
+		redo.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if(Operation.canRedo()) Operation.redoLast();
+			}
+		});
+		edit.add(redo);
 		menu.add(edit);
 		
 		this.setJMenuBar(menu);
