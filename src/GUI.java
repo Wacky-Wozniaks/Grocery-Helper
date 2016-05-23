@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -39,6 +42,8 @@ public class GUI extends JFrame
 			UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		}
 		catch(Throwable e){}
+		
+		addMenu();
 		
 		inventories = i;
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -80,6 +85,26 @@ public class GUI extends JFrame
 		display.removeAll();
 		display.add(i.getGUI());
 		display.setVisible(true);
+	}
+	
+	private void addMenu() {
+		JMenuBar menu = new JMenuBar();
+		
+		JMenu file = new JMenu("File");
+		JMenu newMenu = new JMenu("New");
+		newMenu.add(new JMenuItem("Inventory"));
+		newMenu.add(new JMenuItem("Item"));
+		file.add(newMenu);
+		file.add(new JMenuItem("Export"));
+		file.add(new JMenuItem("Print"));
+		menu.add(file);
+		
+		JMenu edit = new JMenu("Edit");
+		edit.add(new JMenuItem("Undo"));
+		edit.add(new JMenuItem("Redo"));
+		menu.add(edit);
+		
+		this.setJMenuBar(menu);
 	}
 	
 	/**
