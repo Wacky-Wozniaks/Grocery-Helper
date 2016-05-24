@@ -74,6 +74,7 @@ public class GUI extends JFrame
 		pack();
 		setVisible(true);
 		this.setResizable(false);
+		requestFocus(); //makes the frame get the focus
 	}
 	
 	/**

@@ -137,7 +137,6 @@ public class InventoryGUI extends JPanel implements Observer
 		panel.add(list, c);
 		
 		add(panel);
-		this.requestFocus(); //makes the frame get the focus
 	}
 	
 	
