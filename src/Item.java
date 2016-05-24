@@ -2,7 +2,7 @@
  * Represents an item to be stored in the inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/20/2016
+ * @version 05/24/2016
  */
 
 public class Item implements Comparable<Item>
@@ -76,6 +76,7 @@ public class Item implements Comparable<Item>
 	{
 		Operation.addToUndo(new Operation(this, Operation.MIN_CHANGE, this.min));
 		this.min = min;
+		gui.updateQuantity();
 	}
 
 	/**
@@ -97,6 +98,7 @@ public class Item implements Comparable<Item>
 	{
 		Operation.addToUndo(new Operation(this, Operation.MAX_CHANGE, this.max));
 		this.max = max;
+		gui.updateQuantity();
 	}
 
 	/**

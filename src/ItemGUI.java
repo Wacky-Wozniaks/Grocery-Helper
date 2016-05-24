@@ -216,7 +216,6 @@ public class ItemGUI extends JPanel
 							if(maximum <= 0 || maximum < minimum) maximum = 0;
 							else //Once a valid maximum has been entered, sets the value
 							{
-								max.setText("" + maximum);
 								item.setMax(maximum);
 								break;
 							}
@@ -284,7 +283,6 @@ public class ItemGUI extends JPanel
 							if(minimum < 0 || maximum < minimum) minimum = 0;
 							else //Once a valid minimum has been entered, sets the value
 							{
-								min.setText("" + minimum);
 								item.setMin(minimum);
 								if(item.moreNeeded()) name.setForeground(Color.RED);
 								else name.setForeground(Color.BLACK);
