@@ -2,7 +2,7 @@
  * The GUI for an inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/21/2016
+ * @version 05/24/2016
  */
 
 import java.awt.Color;
@@ -130,7 +130,7 @@ public class InventoryGUI extends JPanel implements Observer
 					JOptionPane.showMessageDialog(panel, "No groceries need to be purchased.", "No List Created", JOptionPane.PLAIN_MESSAGE);
 					return;
 				}
-				new GroceryListGUI(groceries);
+				new GroceryListGUI(inventory);
 			}
 		});
 		c.gridy++;

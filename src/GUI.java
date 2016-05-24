@@ -2,7 +2,7 @@
  * The main GUI for the project.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/23/2016
+ * @version 05/24/2016
  */
 
 import java.awt.Color;
@@ -96,6 +96,7 @@ public class GUI extends JFrame
 		
 		JMenu file = new JMenu("File");
 		JMenu newMenu = new JMenu("New");
+		
 		JMenuItem inventory = new JMenuItem("Inventory"); //Allows another item to be added to the inventory
 		inventory.addActionListener(new ActionListener()
 		{
@@ -116,6 +117,7 @@ public class GUI extends JFrame
 			}
 		});
 		newMenu.add(inventory);
+		
 		JMenuItem item = new JMenuItem("Item"); //Allows the addition of new items to the selected inventory
 		item.addActionListener(new ActionListener()
 		{
@@ -126,8 +128,35 @@ public class GUI extends JFrame
 		});
 		newMenu.add(item);
 		file.add(newMenu);
-		file.add(new JMenuItem("Export"));
-		file.add(new JMenuItem("Print"));
+		
+		JMenu export = new JMenu("Export Grocery List"); //Exports the grocery list
+		
+		JMenuItem exportToFile = new JMenuItem("File..."); //exports list to file
+		exportToFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selected.exportListToTextFile();
+			}
+		});
+		export.add(exportToFile);
+		
+		JMenuItem exportToEmail = new JMenuItem("Email..."); //exports list to email
+		exportToEmail.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selected.exportListToEmail();
+			}
+		});
+		export.add(exportToEmail);
+		
+		file.add(export);
+		
+		JMenuItem print = new JMenuItem("Print");
+		print.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selected.printList();
+			}
+		});
+		file.add(print);
+		
 		menu.add(file);
 		
 		JMenu edit = new JMenu("Edit");

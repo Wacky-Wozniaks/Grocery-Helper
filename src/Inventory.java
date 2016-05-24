@@ -2,18 +2,48 @@
  * Represents the inventory in a binary search tree
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/23/2016
+ * @version 05/24/2016
  */
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Observable;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.TreeMap;
+
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.docx4j.Docx4J;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
 public class Inventory extends Observable {
 	
@@ -220,4 +250,265 @@ public class Inventory extends Observable {
 		if(!(other instanceof Inventory)) return false;
 		return ((Inventory) other).getName().equals(name);
 	}
+	
+	/**
+	 * Exports the grocery list of this inventory to a file. Can export to plain text (.txt) or Word Document (.docx).
+	 */
+	public void exportListToTextFile() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Microsoft Word Document (.docx)","docx"));
+		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Plain Text Document (.txt)","txt"));
+		chooser.setAcceptAllFileFilterUsed(false);
+		int option = chooser.showSaveDialog(null);
+		if(option == JFileChooser.APPROVE_OPTION) {
+			PrintWriter writer = null;
+			try {
+				File file = chooser.getSelectedFile();
+				if (file.getName().lastIndexOf(".docx") == file.getName().length() - 5) {
+					writeToDocx(this.getListString(), file);
+					return; //if an exception is thrown, it will be caught below and display an error message
+					
+				}
+				else if(file.getName().lastIndexOf(".txt") != file.getName().length() - 4) { //if NOT docx NOR txt export
+					JOptionPane.showMessageDialog(null, "\".txt\" or \".docx\" extension required!", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				//write text file
+				file.createNewFile();
+				writer = new PrintWriter(file);
+				for(Item i: this.getGroceryList()) writer.println(i.getName() + " : " + i.amountToBuy());
+				writer.close();
+			} catch (Exception e1) {
+				JOptionPane.showMessageDialog(null, "Error in Saving", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+	}
+	
+	/**
+	 * Attempts to write the given shopping list to a Microsoft Word (.docx) file.
+	 * 
+	 * @reference https://github.com/plutext/docx4j/blob/master/src/samples/docx4j/org/docx4j/samples/NewDocxHelloWorld.java
+	 * @param list The String form of the list to be exported.
+	 * @param file The File to be written to.
+	 * @throws Docx4JException If there is a problem in the exporting of the grocery list.
+	 */
+	private void writeToDocx(String list, File file) throws Docx4JException {
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		MainDocumentPart mdp = pkg.getMainDocumentPart();
+		
+		//Must add each line separately as a new "paragraph"
+		//because the "\n" line break character is not rendered correctly in this library
+		for (String line : list.split("\n")) {
+			mdp.addParagraphOfText(line);
+		}
+		
+		Docx4J.save(pkg, file, Docx4J.FLAG_SAVE_ZIP_FILE); //save the file
+	}
+	
+	/**
+	 * Exports the grocery list of the inventory and sends it as an email.
+	 */
+	public void exportListToEmail() {
+		//JOptionPane sending;
+		JDialog sending;
+		try {
+			String emailAddr = (String) JOptionPane.showInputDialog(null, "Enter your email address:",
+					"Email My Shopping List", JOptionPane.PLAIN_MESSAGE);
+			sending = new JDialog((JFrame) null, "Grocery List", false);
+			sending.add(new JLabel("Sending..."));
+			sending.setLocationRelativeTo(null);
+			sending.setPreferredSize(new Dimension(300, 150));
+			sending.pack();
+			sending.setVisible(true);
+			
+			if (!isValidEmail(emailAddr)) { //Checks syntactical validity of email address
+				sending.dispose();
+				throw new IllegalArgumentException();
+			}
+			
+			if (!sendEmail(emailAddr)) { //Attempts to send the email
+				sending.dispose();
+				throw new RuntimeException(); //If email doesn't go through, throw an exception
+			}
+			else { //Confirms successful sending
+				sending.dispose();
+				JOptionPane.showMessageDialog(null, "Email sent!", "Emailed list", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+		} 
+		catch (IllegalArgumentException e1) { //Error message for invalid email address
+			JOptionPane.showMessageDialog(null, "Invalid email address!", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		catch (Throwable e2) { //Error message for all other sending failures
+			JOptionPane.showMessageDialog(null, "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+	}
+	
+	/**
+	 * Attempts to send an email, returns whether or not such attempt succeeded.
+	 * Exception thrown if something goes wrong; these are caught elsewhere.
+	 * 
+	 * @param emailAddr The email address the list will be sent to.
+	 * @return True if email sent, false if not.
+	 */
+	private boolean sendEmail(String emailAddr) {
+		//Gmail connection configurations
+		Properties props = new Properties();
+		props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.socketFactory.port", "465");
+		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.port", "465");
+
+		//Local save file that contains the super secret password to the Gmail account
+		Scanner scan;
+		final String pw;
+		try {
+			scan = new Scanner(new File("email.compsci"));
+			pw = scan.nextLine();
+			scan.close(); //close the Scanner
+		}
+		catch (FileNotFoundException e1) {
+			return false;
+		}
+
+		//Logs in to the account with given authenticaion information
+		Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication("MXShoppingList", pw);
+			}
+		});
+
+		//Builds the contents of the email and tries to send it
+		try {
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress("MXShoppingList@gmail.com"));
+			message.setRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(emailAddr));
+			message.setSubject("Your Shopping List");
+			message.setText(this.getListString());
+
+			Transport.send(message);
+		}
+		catch (Throwable e) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	/**
+	 * Checks if a given string is a valid email address (syntactically) according to RFC822 standards
+	 * 
+	 * @param s The email to see if syntactically valid.
+	 * @return True if valid, false if invalid (through a caught exception)
+	 */
+	private boolean isValidEmail(String s) {
+		try {
+			InternetAddress email = new InternetAddress(s);
+			email.validate(); //throws exception if syntactically invalid
+		}
+		catch (Throwable e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void printList() {
+		try {
+			PrinterJob job = PrinterJob.getPrinterJob();
+			
+			//Note: the PrintedPage object (implements Printable) is defined in a private inner class
+			job.setPrintable(new PrintedPage(this.getListString(), job)); 
+			
+			if (job.printDialog()) { //Display the standard print dialog and attempt to print if valid selection is made
+				job.print();
+				JOptionPane.showMessageDialog(null, "Sent to printer!", "Printer Job Sent", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+		} 
+		catch (Throwable e1) {
+			JOptionPane.showMessageDialog(null, "Print failed!", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+	}
+	
+	//Private inner class that represents the physical piece of paper that the printer will output
+		private class PrintedPage implements Printable {
+			private String printString; //the string to be sent to the printer
+			private PrinterJob job;
+			
+			//Letter size paper, units in inches
+			private final double PAPERWIDTH = 8.5;
+			private final double PAPERHEIGHT = 11;
+			
+			//1 inch = 72 pixels
+			private final double INCHTOPIXELS = 72; 
+			
+			public PrintedPage(String printString, PrinterJob job) {
+				this.printString = printString;
+				this.job = job;
+			}
+			 
+			//Reference: http://www.java2s.com/Code/Java/2D-Graphics-GUI/Printabledemo.htm
+			public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
+					throws PrinterException {
+				
+				PageFormat format = job.defaultPage();
+				Paper paper = new Paper();
+				
+				paper.setSize(PAPERWIDTH * INCHTOPIXELS, PAPERHEIGHT * INCHTOPIXELS); //72 pixels per inch
+				
+				//1 inch margins
+				paper.setImageableArea(INCHTOPIXELS, INCHTOPIXELS, paper.getWidth() - INCHTOPIXELS*2,
+						paper.getHeight() - INCHTOPIXELS*2);
+				format.setPaper(paper);
+				
+				job.setPrintable(this, format);
+				
+				if (pageIndex != 0) {
+					return NO_SUCH_PAGE;
+				}
+				
+				//setting text style
+				Graphics2D content = (Graphics2D) graphics;
+				content.setFont(new Font("Serif", Font.PLAIN, 14));
+				content.setPaint(Color.black);
+				
+				/*
+				 * Parameters for drawString inside the for loop:
+				 * drawString(ONE LINE, LEFT MARGIN (1 INCH), VERTICAL MARGIN INCREMENTED EACH LINE)
+				 * This basically adds the shopping listline by line because the API
+				 * doesn't support the "\n" linebreak character
+				 */
+				int vertMargin = (int) INCHTOPIXELS;
+				for (String line : printString.split("\n")) {
+			        content.drawString(line, (int) INCHTOPIXELS, vertMargin+= content.getFontMetrics().getHeight());
+				}
+				
+				return PAGE_EXISTS;
+			}
+			
+		}
+	
+	/**
+	 * Creates and returns the String representation of the Grocery List
+	 * 
+	 * @return the String representation of the Grocery List
+	 */
+	public String getListString() {
+		//Create and store a String that is a readable representation of the shopping list
+		String listString = "";
+		listString = "Your shopping list generated at ";
+		listString += new SimpleDateFormat("h:mm a 'on' MM/dd/yyyy").format(new java.util.Date());
+		listString += ":\n";
+		for (Item i: this.getGroceryList()) 
+			listString += i.getName() + " : " + i.amountToBuy() + "\n";
+		return listString;
+	}
+	
 }
