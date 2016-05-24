@@ -2,7 +2,7 @@
  * The button and information panel for an item.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/20/2016
+ * @version 05/24/2016
  */
 
 import java.awt.BorderLayout;
@@ -12,6 +12,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -168,6 +170,67 @@ public class ItemGUI extends JPanel
 		panel.add(new JLabel("Minimum Limit"), c);
 		c.gridx++;
 		min = new JTextField("" + item.getMin(), 2);
+		min.addFocusListener(new FocusListener()
+		{
+			public void focusGained(FocusEvent arg0){}
+			public void focusLost(FocusEvent arg0) //When the user clicks out of the textfield, it updates the value in the item
+			{
+				int minimum;
+				try
+				{
+					minimum = Integer.parseInt(min.getText());
+				}
+				catch(Throwable e)
+				{
+					JOptionPane.showMessageDialog(frame, "Minimum limit must be an integer.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					min.setText("" + item.getMin()); //Resets the the textfield to the old value
+					return;
+				}
+				
+				if(minimum < 0) //Ensures that the value is not negative
+				{
+					JOptionPane.showMessageDialog(frame, "Minimum limit cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					min.setText("" + item.getMin()); //Resets the the textfield to the old value
+					return;
+				}
+				
+				if (item.getMax() < minimum) //Ensures that the max is not less than the min and if it isn't prompts the user for a new max value 
+				{
+					Object o = JOptionPane.showInputDialog(frame, "<html>The maximum limit must be greater than or equal to the minimum limit."
+							+ "<br>Enter a new value for the maximum limit</html>", "", JOptionPane.ERROR_MESSAGE);
+					
+					for(int maximum = 0; maximum == 0; o = JOptionPane.showInputDialog(frame, "<html>Invalid value for maximum limit.<br>Enter a valid value."
+							+ "</html>", "Set Maximum Limit", JOptionPane.ERROR_MESSAGE)) //Each time an invalid value is entered, prompts the user for a new one
+					{
+						if(o == null)
+						{
+							min.setText("" + item.getMin()); //If the user cancels, resets the textfield to the old min value
+							return;
+						}
+					
+						try
+						{
+							maximum = Integer.parseInt((String) o);
+							
+							//Tests for error values and if it finds them sets the value to 0
+							if(maximum <= 0 || maximum < minimum) maximum = 0;
+							else //Once a valid maximum has been entered, sets the value
+							{
+								max.setText("" + maximum);
+								item.setMax(maximum);
+								break;
+							}
+						}
+						catch(Throwable e){} //Error message is handled in for loop
+					}
+					
+				}
+				
+				item.setMin(minimum);
+				if(item.moreNeeded()) name.setForeground(Color.RED);
+				else name.setForeground(Color.BLACK);
+			}
+		});
 		panel.add(min, c);
 		c.gridx = 0;
 		c.gridy++;
@@ -175,38 +238,68 @@ public class ItemGUI extends JPanel
 		panel.add(new JLabel("Maximum Limit"), c);
 		c.gridx++;
 		max = new JTextField("" + item.getMax(), 2);
-		panel.add(max, c);
-		c.gridx = 0;
-		c.gridy++;
-		
-		JButton update = new JButton("Update");
-		update.addActionListener(new ActionListener()
+		max.addFocusListener(new FocusListener()
 		{
-			public void actionPerformed(ActionEvent arg0)
+			public void focusGained(FocusEvent arg0){}
+			public void focusLost(FocusEvent arg0) //When the user clicks out of the textfield, it updates the value in the item
 			{
+				int maximum;
 				try
 				{
-					int minimum = Integer.parseInt(min.getText());
-					int maximum = Integer.parseInt(max.getText());
-					
-					if (maximum < minimum) {
-						JOptionPane.showMessageDialog(frame, "The Maximum Limit must be greater than or equal to the Minimum Limit.", "", JOptionPane.ERROR_MESSAGE, null);
-						return;
-					}
-					
-					item.setMin(Integer.parseInt(min.getText()));
-					item.setMax(Integer.parseInt(max.getText()));
-					if(item.moreNeeded()) name.setForeground(Color.RED);
-					else name.setForeground(Color.BLACK);
-					frame.setVisible(false);
+					maximum = Integer.parseInt(max.getText());
 				}
 				catch(Throwable e)
 				{
-					JOptionPane.showMessageDialog(frame, "Enter an integer.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					JOptionPane.showMessageDialog(frame, "Maximum limit must be an integer.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					max.setText("" + item.getMax()); //Resets the the textfield to the old value
+					return;
 				}
+				
+				if(maximum <= 0) //Ensures that the value is not negative
+				{
+					JOptionPane.showMessageDialog(frame, "Maximum limit cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					max.setText("" + item.getMax()); //Resets the the textfield to the old value
+					return;
+				}
+				
+				if (maximum < item.getMin()) //Ensures that the max is not less than the min and if it isn't prompts the user for a new min value 
+				{
+					Object o = JOptionPane.showInputDialog(frame, "<html>The maximum limit must be greater than or equal to the minimum limit."
+							+ "<br>Enter a new value for the minimum limit</html>", "", JOptionPane.ERROR_MESSAGE);
+					
+					for(int minimum = 0; minimum == 0; o = JOptionPane.showInputDialog(frame, "<html>Invalid value for minimum limit.<br>Enter a valid value."
+							+ "</html>", "Set Minimum Limit", JOptionPane.ERROR_MESSAGE)) //Each time an invalid value is entered, prompts the user
+					{
+						if(o == null)
+						{
+							max.setText("" + item.getMax()); //If the user cancels, resets the textfield to the old max value
+							return;
+						}
+					
+						try
+						{
+							minimum = Integer.parseInt((String) o);
+							
+							//Tests for error values and if it finds them sets the value to 0
+							if(minimum < 0 || maximum < minimum) minimum = 0;
+							else //Once a valid minimum has been entered, sets the value
+							{
+								min.setText("" + minimum);
+								item.setMin(minimum);
+								if(item.moreNeeded()) name.setForeground(Color.RED);
+								else name.setForeground(Color.BLACK);
+								break;
+							}
+						}
+						catch(Throwable e){} //Error message is handled in for loop
+					}
+				}
+				
+				item.setMax(maximum);
 			}
 		});
-		panel.add(update, c);
+		panel.add(max, c);
+		c.gridx = 0;
 		
 		c.gridy++;
 		JButton remove = new JButton("Remove Item");
