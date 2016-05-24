@@ -158,6 +158,7 @@ public class GUI extends JFrame
 				selected.printList();
 			}
 		});
+		print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK));
 		file.add(print);
 		
 		menu.add(file);
