@@ -6,10 +6,12 @@
  */
 
 import java.awt.Color;
+import java.awt.Event;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -168,6 +171,7 @@ public class GUI extends JFrame
 				if(Operation.canUndo()) Operation.undoLast();
 			}
 		});
+		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK));
 		edit.add(undo);
 		JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
 		redo.addActionListener(new ActionListener()
@@ -177,6 +181,7 @@ public class GUI extends JFrame
 				if(Operation.canRedo()) Operation.redoLast();
 			}
 		});
+		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK));
 		edit.add(redo);
 		menu.add(edit);
 		
