@@ -115,7 +115,15 @@ public class GUI extends JFrame
 			}
 		});
 		newMenu.add(inventory);
-		newMenu.add(new JMenuItem("Item"));
+		JMenuItem item = new JMenuItem("Item"); //Allows the addition of new items to the selected inventory
+		item.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				new AddFrame(selected, "");
+			}
+		});
+		newMenu.add(item);
 		file.add(newMenu);
 		file.add(new JMenuItem("Export"));
 		file.add(new JMenuItem("Print"));
