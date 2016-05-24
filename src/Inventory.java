@@ -2,7 +2,7 @@
  * Represents the inventory in a binary search tree
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/20/2016
+ * @version 05/23/2016
  */
 
 import java.io.File;
@@ -208,5 +208,16 @@ public class Inventory extends Observable {
 	public boolean contains(Item item)
 	{
 		return inventory.containsValue(item);
+	}
+	
+	/**
+	 * Returns whether the inventories are equal based on their names.
+	 * 
+	 * @param other The object to compare to.
+	 */
+	public boolean equals(Object other)
+	{
+		if(!(other instanceof Inventory)) return false;
+		return ((Inventory) other).getName().equals(name);
 	}
 }

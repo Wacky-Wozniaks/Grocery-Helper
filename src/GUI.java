@@ -2,7 +2,7 @@
  * The main GUI for the project.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/18/2016
+ * @version 05/23/2016
  */
 
 import java.awt.Color;
@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -94,12 +95,23 @@ public class GUI extends JFrame
 		
 		JMenu file = new JMenu("File");
 		JMenu newMenu = new JMenu("New");
-		JMenuItem inventory = new JMenuItem("Inventory");
+		JMenuItem inventory = new JMenuItem("Inventory"); //Allows another item to be added to the inventory
 		inventory.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				
+				Object name =JOptionPane.showInputDialog(display, "Enter the name of the new inventory.", "Add Inventory", JOptionPane.PLAIN_MESSAGE);
+				if(name == null) return;
+				Inventory i = new Inventory((String) name);
+				for(; inventories.contains(i) && name != null; name = JOptionPane.showInputDialog(display, name + " is already an inventory. Enter a different"
+						+ " name", "Add Inventory", JOptionPane.PLAIN_MESSAGE)) //Prompts the user for a name until they enter a valid option
+				{
+					i.setName((String) name);
+				}
+				if(name == null) return; //If the user chose to cancel after entering an invalid name
+				inventories.add(i);
+				options.add(new InventoryButton(i));
+				updateSelected(i);
 			}
 		});
 		newMenu.add(inventory);
@@ -110,7 +122,7 @@ public class GUI extends JFrame
 		menu.add(file);
 		
 		JMenu edit = new JMenu("Edit");
-		JMenuItem undo = new JMenuItem("Undo");
+		JMenuItem undo = new JMenuItem("Undo"); //Undoes the last operation
 		undo.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -119,7 +131,7 @@ public class GUI extends JFrame
 			}
 		});
 		edit.add(undo);
-		JMenuItem redo = new JMenuItem("Redo");
+		JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
 		redo.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
