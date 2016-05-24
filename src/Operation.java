@@ -2,7 +2,7 @@
  * Represents an operation executed in the program, such as adding an item to an inventory or changing the quantity of an item.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/21/2016
+ * @version 05/24/2016
  */
 
 import java.util.Stack;
@@ -11,6 +11,7 @@ public class Operation
 {
 	public static final int QUANTITY_CHANGE = 1, MIN_CHANGE = 2, MAX_CHANGE = 3, ADDED = 4, REMOVED = 5; //The different operations
 	private static Stack<Operation> undo = new Stack<Operation>(), redo = new Stack<Operation>(); //Stacks of the last commands the program has made
+	private static boolean enabled = false; //Whether current actions are being added to the stack so that adding items when the program starts isn't counted
 	
 	private Item item;
 	private int operation; //One of the constants from above
@@ -66,6 +67,7 @@ public class Operation
 		}
 		else if(operation == ADDED) item.getInventory().remove(item);
 		else if(operation == REMOVED) item.getInventory().add(item);
+		redo.clear(); //Once a new chain of action happens, redo is cleared
 	}
 	
 	/**
@@ -136,12 +138,22 @@ public class Operation
 	}
 	
 	/**
-	 * Adds the operation to the undo stack.
+	 * Adds the operation to the undo stack unless the stack is currently disabled.
 	 * 
 	 * @param operation The last performed operation.
 	 */
 	public static void addToUndo(Operation operation)
 	{
-		undo.push(operation);
+		if(enabled) undo.push(operation);
+	}
+	
+	/**
+	 * Sets whether operations will be added to the stack.
+	 * 
+	 * @param e Whether the stack will be enabled or disabled.
+	 */
+	public static void setEnabled(boolean e)
+	{
+		enabled = e;
 	}
 }
