@@ -79,6 +79,7 @@ public class GroceryListGUI extends JFrame {
 		scroll.setPreferredSize(SCROLL_PANEL_SIZE);
 		panel.add(scroll, c);
 		
+		JPanel buttons = new JPanel();
 		//Adding export button
 		//Able to export to either a Microsoft Word file (.docx) or a plain text file (.txt)
 		c.gridy++;
@@ -88,7 +89,7 @@ public class GroceryListGUI extends JFrame {
 				inventory.exportListToTextFile();
 			}
 		});
-		panel.add(export, c);
+		buttons.add(export);
 		
 		//adding email button
 		c.gridy++;
@@ -98,7 +99,7 @@ public class GroceryListGUI extends JFrame {
 				inventory.exportListToEmail();
 			}
 		});
-		panel.add(email, c);
+		buttons.add(email);
 		
 		//adding print button
 		c.gridy++;
@@ -108,7 +109,24 @@ public class GroceryListGUI extends JFrame {
 				inventory.printList();
 			}
 		});
-		panel.add(print, c);
+		buttons.add(print);
+		
+		panel.add(buttons, c);
+		//Adds all groceries to the inventory
+		JButton add = new JButton("Add to Inventory");
+		add.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				for(Item i: groceries)
+				{
+					i.setQuantity(i.getMax());
+				}
+				dispose();
+			}
+		});
+		c.gridy++;
+		panel.add(add, c);
 		
 		this.add(panel);
 		this.pack();
