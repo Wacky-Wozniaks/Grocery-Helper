@@ -52,7 +52,12 @@ public class GroceryListGUI extends JFrame {
 	private static final Dimension SCROLL_PANEL_SIZE = new Dimension(200, 300);
 	private List<Item> groceries;
 	
-	public GroceryListGUI(final Inventory inventory/*final List<Item> groceries*/) {
+	/**
+	 * Constructs a GUI for the grocery list of the inventory.
+	 * 
+	 * @param inventory The inventory to make the grocery list for.
+	 */
+	public GroceryListGUI(final Inventory inventory) {
 		super("Grocery List");
 		try {
 			if(!System.getProperty("os.name").contains("Mac"))
