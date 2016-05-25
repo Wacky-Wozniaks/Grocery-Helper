@@ -52,7 +52,8 @@ public class InventoryGUI extends JPanel implements Observer
 	{
 		try
 		{
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			if(!System.getProperty("os.name").contains("Mac"))
+				UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		}
 		catch(Throwable e){}
 		

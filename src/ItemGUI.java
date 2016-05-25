@@ -48,7 +48,8 @@ public class ItemGUI extends JPanel
 	{
 		try
 		{
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			if(!System.getProperty("os.name").contains("Mac"))
+				UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		}
 		catch(Throwable e){}
 		this.item = item;

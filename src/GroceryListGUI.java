@@ -55,7 +55,8 @@ public class GroceryListGUI extends JFrame {
 	public GroceryListGUI(final Inventory inventory/*final List<Item> groceries*/) {
 		super("Grocery List");
 		try {
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			if(!System.getProperty("os.name").contains("Mac"))
+				UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		} catch (UnsupportedLookAndFeelException e) {}
 		
 		groceries = inventory.getGroceryList();

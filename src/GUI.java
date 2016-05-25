@@ -45,7 +45,8 @@ public class GUI extends JFrame
 	{
 		try
 		{
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			if(!System.getProperty("os.name").contains("Mac"))
+				UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		}
 		catch(Throwable e){}
 		
