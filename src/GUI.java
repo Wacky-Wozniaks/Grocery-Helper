@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Event;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -100,7 +101,7 @@ public class GUI extends JFrame
 		JMenu file = new JMenu("File");
 		JMenu newMenu = new JMenu("New");
 		
-		JMenuItem inventory = new JMenuItem("Inventory"); //Allows another item to be added to the inventory
+		JMenuItem inventory = new JMenuItem("Inventory..."); //Allows another item to be added to the inventory
 		inventory.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -158,7 +159,10 @@ public class GUI extends JFrame
 				selected.printList();
 			}
 		});
-		print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK));
+		//if(System.getProperty("os.name").contains("Mac")) 
+			print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		/*else 
+			print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK));*/
 		file.add(print);
 		
 		menu.add(file);
@@ -172,8 +176,12 @@ public class GUI extends JFrame
 				if(Operation.canUndo()) Operation.undoLast();
 			}
 		});
-		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK));
+		//if(System.getProperty("os.name").contains("Mac")) 
+			undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		/*else 
+			undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK));*/
 		edit.add(undo);
+		
 		JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
 		redo.addActionListener(new ActionListener()
 		{
@@ -185,6 +193,21 @@ public class GUI extends JFrame
 		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK));
 		edit.add(redo);
 		menu.add(edit);
+		
+		JMenu inventoryMenu = new JMenu("Inventory"); //the inventory menu
+		
+		JMenuItem inventory2 = new JMenuItem("New...");
+		inventory2.addActionListener(inventory.getActionListeners()[0]);
+		inventoryMenu.add(inventory2);
+		JMenuItem removeInventory = new JMenuItem("Remove");
+		removeInventory.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		inventoryMenu.add(removeInventory);
+		
+		menu.add(inventoryMenu);
 		
 		this.setJMenuBar(menu);
 	}
