@@ -156,6 +156,7 @@ public class InventoryGUI extends JPanel implements Observer
 		{
 			if(inventory.contains((Item) arg1))
 			{
+				b.setVisible(false);
 				removeScrollSpace();
 				b.add(((Item) arg1).getGUI());
 				addScrollSpace();
