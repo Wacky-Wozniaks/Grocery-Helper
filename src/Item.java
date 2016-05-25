@@ -2,7 +2,7 @@
  * Represents an item to be stored in the inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/24/2016
+ * @version 05/25/2016
  */
 
 public class Item implements Comparable<Item>
@@ -74,6 +74,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void setMin(int min)
 	{
+		if(min == this.min) return;
 		Operation.addToUndo(new Operation(this, Operation.MIN_CHANGE, this.min));
 		this.min = min;
 		gui.updateQuantity();
@@ -96,6 +97,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void setMax(int max)
 	{
+		if(max == this.max) return;
 		Operation.addToUndo(new Operation(this, Operation.MAX_CHANGE, this.max));
 		this.max = max;
 		gui.updateQuantity();
@@ -158,6 +160,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void setQuantity(int quantity)
 	{
+		if(quantity == this.quantity) return;
 		Operation.addToUndo(new Operation(this, Operation.QUANTITY_CHANGE, this.quantity));
 		this.quantity = quantity;
 		gui.updateQuantity();
@@ -170,6 +173,7 @@ public class Item implements Comparable<Item>
 	 */
 	public void updateQuantity(int change)
 	{
+		if(change == 0) return;
 		Operation.addToUndo(new Operation(this, Operation.QUANTITY_CHANGE, this.quantity));
 		quantity += change;
 	}

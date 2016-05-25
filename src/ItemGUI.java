@@ -2,7 +2,7 @@
  * The button and information panel for an item.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/24/2016
+ * @version 05/25/2016
  */
 
 import java.awt.BorderLayout;
@@ -137,6 +137,35 @@ public class ItemGUI extends JPanel
 		JPanel updateQ = new JPanel();
 		JButton plus = new JButton("+");
 		amount = new JTextField("" + item.getQuantity(), 2);
+		amount.addFocusListener(new FocusListener() //Updates the item information when the user finishes entering data
+		{
+			public void focusGained(FocusEvent arg0){}
+			public void focusLost(FocusEvent arg0)
+			{
+				int quantity;
+				try
+				{
+					quantity = Integer.parseInt(amount.getText());
+				}
+				catch(Throwable e)
+				{
+					JOptionPane.showMessageDialog(frame, "Amount must be an integer.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					amount.setText("" + item.getQuantity()); //Resets the the textfield to the old value
+					return;
+				}
+				
+				if(quantity < 0) //Ensures that the value is not negative
+				{
+					JOptionPane.showMessageDialog(frame, "Minimum limit cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					min.setText("" + item.getMin()); //Resets the the textfield to the old value
+					return;
+				}
+				
+				item.setQuantity(quantity);
+				if(item.moreNeeded()) name.setForeground(Color.RED);
+				else name.setForeground(Color.BLACK);
+			}
+		});
 		JButton minus = new JButton("-");
 		plus.addActionListener(new ActionListener()
 		{

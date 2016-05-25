@@ -2,7 +2,7 @@
  * Represents the inventory in a binary search tree
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/24/2016
+ * @version 05/25/2016
  */
 
 import java.awt.Color;
@@ -71,8 +71,6 @@ public class Inventory extends Observable {
 		this.name = name;
 		fileName = name + EXTENSION;
 		file = new File(fileName);
-		//gui = new InventoryGUI(this);
-		//addObserver(gui);
 	}
 	
 	/**
@@ -85,8 +83,6 @@ public class Inventory extends Observable {
 		this.name = name;
 		fileName = name + EXTENSION;
 		file = new File(fileName);
-		//gui = new InventoryGUI(this);
-		//addObserver(gui);
 	}
 	
 	/**
@@ -307,10 +303,18 @@ public class Inventory extends Observable {
 		Docx4J.save(pkg, file, Docx4J.FLAG_SAVE_ZIP_FILE); //save the file
 	}
 	
+	
+	/**
+	 * Exports this inventory's grocery list to an email.
+	 */
 	public void exportListToEmail() {
 		Email.exportListToEmail(this.getListString());
 	}
 	
+	
+	/**
+	 * Prints this inventory's grocery list.
+	 */
 	public void printList() {
 		try {
 			PrinterJob job = PrinterJob.getPrinterJob();
@@ -330,63 +334,78 @@ public class Inventory extends Observable {
 		}
 	}
 	
-	//Private inner class that represents the physical piece of paper that the printer will output
-		private class PrintedPage implements Printable {
-			private String printString; //the string to be sent to the printer
-			private PrinterJob job;
-			
-			//Letter size paper, units in inches
-			private final double PAPERWIDTH = 8.5;
-			private final double PAPERHEIGHT = 11;
-			
-			//1 inch = 72 pixels
-			private final double INCHTOPIXELS = 72; 
-			
-			public PrintedPage(String printString, PrinterJob job) {
-				this.printString = printString;
-				this.job = job;
-			}
-			 
-			//Reference: http://www.java2s.com/Code/Java/2D-Graphics-GUI/Printabledemo.htm
-			public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
-					throws PrinterException {
-				
-				PageFormat format = job.defaultPage();
-				Paper paper = new Paper();
-				
-				paper.setSize(PAPERWIDTH * INCHTOPIXELS, PAPERHEIGHT * INCHTOPIXELS); //72 pixels per inch
-				
-				//1 inch margins
-				paper.setImageableArea(INCHTOPIXELS, INCHTOPIXELS, paper.getWidth() - INCHTOPIXELS*2,
-						paper.getHeight() - INCHTOPIXELS*2);
-				format.setPaper(paper);
-				
-				job.setPrintable(this, format);
-				
-				if (pageIndex != 0) {
-					return NO_SUCH_PAGE;
-				}
-				
-				//setting text style
-				Graphics2D content = (Graphics2D) graphics;
-				content.setFont(new Font("Serif", Font.PLAIN, 14));
-				content.setPaint(Color.black);
-				
-				/*
-				 * Parameters for drawString inside the for loop:
-				 * drawString(ONE LINE, LEFT MARGIN (1 INCH), VERTICAL MARGIN INCREMENTED EACH LINE)
-				 * This basically adds the shopping listline by line because the API
-				 * doesn't support the "\n" linebreak character
-				 */
-				int vertMargin = (int) INCHTOPIXELS;
-				for (String line : printString.split("\n")) {
-			        content.drawString(line, (int) INCHTOPIXELS, vertMargin+= content.getFontMetrics().getHeight());
-				}
-				
-				return PAGE_EXISTS;
-			}
-			
+	/**
+	 * Private inner class that represents the physical piece of paper that the printer will output
+	 */
+	private class PrintedPage implements Printable {
+		private String printString; //the string to be sent to the printer
+		private PrinterJob job;
+
+		//Letter size paper, units in inches
+		private final double PAPERWIDTH = 8.5;
+		private final double PAPERHEIGHT = 11;
+
+		//1 inch = 72 pixels
+		private final double INCHTOPIXELS = 72; 
+		
+		/**
+		 * Constructs the page.
+		 * 
+		 * @param printString The text to print.
+		 * @param job The PrinterJob for this page.
+		 */
+		public PrintedPage(String printString, PrinterJob job) {
+			this.printString = printString;
+			this.job = job;
 		}
+
+		/**
+		 * Prints the page.
+		 * Reference: http://www.java2s.com/Code/Java/2D-Graphics-GUI/Printabledemo.htm
+		 * 
+		 * @param graphics The Graphics for this page.
+		 * @param pageFormat The PageFormat for this page.
+		 * @param pageIndex The index for this page.
+		 */
+		public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
+				throws PrinterException {
+			
+			PageFormat format = job.defaultPage();
+			Paper paper = new Paper();
+			
+			paper.setSize(PAPERWIDTH * INCHTOPIXELS, PAPERHEIGHT * INCHTOPIXELS); //72 pixels per inch
+			
+			//1 inch margins
+			paper.setImageableArea(INCHTOPIXELS, INCHTOPIXELS, paper.getWidth() - INCHTOPIXELS*2,
+					paper.getHeight() - INCHTOPIXELS*2);
+			format.setPaper(paper);
+			
+			job.setPrintable(this, format);
+			
+			if (pageIndex != 0) {
+				return NO_SUCH_PAGE;
+			}
+			
+			//setting text style
+			Graphics2D content = (Graphics2D) graphics;
+			content.setFont(new Font("Serif", Font.PLAIN, 14));
+			content.setPaint(Color.black);
+			
+			/*
+			 * Parameters for drawString inside the for loop:
+			 * drawString(ONE LINE, LEFT MARGIN (1 INCH), VERTICAL MARGIN INCREMENTED EACH LINE)
+			 * This basically adds the shopping listline by line because the API
+			 * doesn't support the "\n" linebreak character
+			 */
+			int vertMargin = (int) INCHTOPIXELS;
+			for (String line : printString.split("\n")) {
+				content.drawString(line, (int) INCHTOPIXELS, vertMargin+= content.getFontMetrics().getHeight());
+			}
+			
+			return PAGE_EXISTS;
+		}
+		
+	}
 	
 	/**
 	 * Creates and returns the String representation of the Grocery List
