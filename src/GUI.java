@@ -6,7 +6,6 @@
  */
 
 import java.awt.Color;
-import java.awt.Event;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -120,9 +119,10 @@ public class GUI extends JFrame
 				updateSelected(i);
 			}
 		});
+		inventory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		newMenu.add(inventory);
 		
-		JMenuItem item = new JMenuItem("Item"); //Allows the addition of new items to the selected inventory
+		JMenuItem item = new JMenuItem("Item..."); //Allows the addition of new items to the selected inventory
 		item.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -130,6 +130,7 @@ public class GUI extends JFrame
 				new AddFrame(selected, "");
 			}
 		});
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		newMenu.add(item);
 		file.add(newMenu);
 		
@@ -159,10 +160,7 @@ public class GUI extends JFrame
 				selected.printList();
 			}
 		});
-		//if(System.getProperty("os.name").contains("Mac")) 
-			print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-		/*else 
-			print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK));*/
+		print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		file.add(print);
 		
 		menu.add(file);
@@ -175,11 +173,8 @@ public class GUI extends JFrame
 			{
 				if(Operation.canUndo()) Operation.undoLast();
 			}
-		});
-		//if(System.getProperty("os.name").contains("Mac")) 
-			undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-		/*else 
-			undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK));*/
+		}); 
+		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		edit.add(undo);
 		
 		JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
@@ -190,7 +185,7 @@ public class GUI extends JFrame
 				if(Operation.canRedo()) Operation.redoLast();
 			}
 		});
-		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK));
+		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		edit.add(redo);
 		menu.add(edit);
 		
@@ -198,6 +193,7 @@ public class GUI extends JFrame
 		
 		JMenuItem inventory2 = new JMenuItem("New...");
 		inventory2.addActionListener(inventory.getActionListeners()[0]);
+		inventory2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		inventoryMenu.add(inventory2);
 		JMenuItem removeInventory = new JMenuItem("Remove");
 		removeInventory.addActionListener(new ActionListener() {
@@ -205,6 +201,7 @@ public class GUI extends JFrame
 				
 			}
 		});
+		removeInventory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		inventoryMenu.add(removeInventory);
 		
 		menu.add(inventoryMenu);
