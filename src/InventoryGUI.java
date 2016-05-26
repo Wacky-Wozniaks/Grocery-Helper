@@ -137,8 +137,7 @@ public class InventoryGUI extends JPanel implements Observer
 			}
 		});
 		c.gridy++;
-		panel.add(list, c);
-		
+		panel.add(list, c);		
 		add(panel);
 	}
 	

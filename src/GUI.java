@@ -6,6 +6,7 @@
  */
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -71,6 +72,7 @@ public class GUI extends JFrame
 				options.add(new InventoryButton(inventory));
 			}
 			updateSelected(inventories.get(0));
+			options.getComponent(0).setBackground(Color.LIGHT_GRAY);
 		}
 		
 		add(panel);
@@ -88,6 +90,16 @@ public class GUI extends JFrame
 	 */
 	private void updateSelected(Inventory i)
 	{
+		for(Component tab: options.getComponents()) {
+			if (!i.equals(((InventoryButton) tab).getInventory())) {
+				((InventoryButton) tab).setSelected(false);
+			}
+			
+			if (!((InventoryButton) tab).getSelected() && !i.equals(((InventoryButton) tab).getInventory())) {
+				tab.setBackground(Color.WHITE);
+			}
+		}
+		
 		display.setVisible(false);
 		selected = i;
 		display.removeAll();
@@ -216,7 +228,7 @@ public class GUI extends JFrame
 	private class InventoryButton extends JPanel
 	{
 		private Inventory inventory;
-		
+		private boolean selected;
 		/**
 		 * Constructs the panel.
 		 * 
@@ -225,6 +237,7 @@ public class GUI extends JFrame
 		public InventoryButton(Inventory i)
 		{
 			inventory = i;
+			selected = false;
 			setBorder(BorderFactory.createCompoundBorder(new LineBorder(Color.BLACK, 1, true), new EmptyBorder(2, 2, 2, 2)));
 			setBackground(Color.WHITE);
 			add(new JLabel(i.getName()));
@@ -233,6 +246,8 @@ public class GUI extends JFrame
 				public void mouseClicked(MouseEvent arg0)
 				{
 					updateSelected(inventory);
+					setBackground(Color.LIGHT_GRAY);
+					selected = true;
 				}
 				
 				public void mouseEntered(MouseEvent arg0)
@@ -242,12 +257,26 @@ public class GUI extends JFrame
 				
 				public void mouseExited(MouseEvent arg0)
 				{
-					setBackground(Color.WHITE);
+					if (!selected){
+						setBackground(Color.WHITE);
+					}
 				}
 				
 				public void mousePressed(MouseEvent arg0){}
 				public void mouseReleased(MouseEvent arg0){}
 			});
+		}
+		
+		public boolean getSelected() {
+			return selected;
+		}
+		
+		public Inventory getInventory() {
+			return inventory;
+		}
+		
+		public void setSelected(boolean s) {
+			selected = s;
 		}
 	}
 }
