@@ -94,6 +94,9 @@ public class GUI extends JFrame
 			if (!i.equals(((InventoryButton) tab).getInventory())) {
 				((InventoryButton) tab).setSelected(false);
 			}
+			else {
+				((InventoryButton) tab).setSelected(true);
+			}
 			
 			if (!((InventoryButton) tab).getSelected() && !i.equals(((InventoryButton) tab).getInventory())) {
 				tab.setBackground(Color.WHITE);

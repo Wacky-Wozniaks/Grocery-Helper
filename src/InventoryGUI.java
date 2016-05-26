@@ -14,15 +14,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -96,6 +100,15 @@ public class InventoryGUI extends JPanel implements Observer
 				}
 			}
 		});		
+		
+		//Keyboard shortcut (CTRL-F or CMD-F) for searching
+		KeyStroke searchShortcut = KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		bar.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(searchShortcut, "search");
+		bar.getActionMap().put("search", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				bar.requestFocusInWindow(); //Make the search field have the focus
+			}
+		});
 		
 		//Adds items to the inventory 
 		JButton add = new JButton("Add Item");
