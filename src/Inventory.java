@@ -174,6 +174,18 @@ public class Inventory extends Observable {
 	}
 	
 	/**
+	 * Adds all the items to the inventory.
+	 * 
+	 */
+	public void addAll(Collection<Item> items)
+	{
+		for(Item i: items)
+		{
+			add(i);
+		}
+	}
+	
+	/**
 	 * Returns the item associated with the name in the map, or null if it does not exist.
 	 * 
 	 * @param name The name of the object to find.

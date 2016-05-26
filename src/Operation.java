@@ -65,8 +65,8 @@ public class Operation
 			item.setMax(changed);
 			changed = oldVal;
 		}
-		else if(operation == ADDED) item.getInventory().remove(item);
-		else if(operation == REMOVED) item.getInventory().add(item);
+		else if(operation == ADDED) MasterInventory.remove(item);
+		else if(operation == REMOVED) MasterInventory.add(item);
 		redo.clear(); //Once a new chain of action happens, redo is cleared
 	}
 	
@@ -93,8 +93,8 @@ public class Operation
 			item.setMax(changed);
 			changed = oldVal;
 		}
-		else if(operation == ADDED) item.getInventory().add(item);
-		else if(operation == REMOVED) item.getInventory().remove(item);
+		else if(operation == ADDED) MasterInventory.add(item);
+		else if(operation == REMOVED) MasterInventory.remove(item);
 	}
 	
 	/**
