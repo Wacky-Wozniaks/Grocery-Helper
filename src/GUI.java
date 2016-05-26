@@ -72,7 +72,7 @@ public class GUI extends JFrame
 				options.add(new InventoryButton(inventory));
 			}
 			updateSelected(inventories.get(0));
-			((InventoryButton)options.getComponent(0)).setSelected(true);
+			options.getComponent(0).setBackground(Color.LIGHT_GRAY);
 		}
 		
 		add(panel);
@@ -280,7 +280,6 @@ public class GUI extends JFrame
 		
 		public void setSelected(boolean s) {
 			selected = s;
-			if(selected == true) setBackground(Color.LIGHT_GRAY);
 		}
 	}
 }
