@@ -44,6 +44,9 @@ public class GUI extends JFrame
 	private static final String GHOST_TEXT = "Search Inventory...";
 	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
 	
+	final static JMenuItem undo = new JMenuItem("Undo"); //Undoes the last operation
+	final static JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
+	
 	private ArrayList<Inventory> inventories;
 	private Inventory selected;
 	private JPanel display, options;
@@ -173,6 +176,18 @@ public class GUI extends JFrame
 	}
 	
 	/**
+	 * Checks whether or not the Undo and Redo buttons should be enabled and toggles them accordingly.	
+	 */
+	public static void updateUnRedo() {
+		if (Operation.canUndo()) {
+			undo.setEnabled(true);
+		}
+		if (Operation.canRedo()) {
+			redo.setEnabled(true);
+		}
+	}
+	
+	/**
 	 * Replaces the inventory in the central panel with the new inventory.
 	 * 
 	 * @param i The inventory to display.
@@ -272,26 +287,33 @@ public class GUI extends JFrame
 		menu.add(file);
 		
 		JMenu edit = new JMenu("Edit");
-		JMenuItem undo = new JMenuItem("Undo"); //Undoes the last operation
+		
 		undo.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
 				if(Operation.canUndo()) Operation.undoLast();
+				if(!Operation.canUndo()) { //If ran out of things to undo, disable the button
+					undo.setEnabled(false);
+				}
 			}
 		}); 
 		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		undo.setEnabled(false);
 		edit.add(undo);
 		
-		JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
 		redo.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
 				if(Operation.canRedo()) Operation.redoLast();
+				if(!Operation.canRedo()) { //If ran out of things to redo, disable the button
+					redo.setEnabled(false);
+				}
 			}
 		});
 		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		redo.setEnabled(false);
 		edit.add(redo);
 		menu.add(edit);
 		

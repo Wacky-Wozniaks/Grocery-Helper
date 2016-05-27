@@ -128,6 +128,7 @@ public class Operation
 		Operation o = undo.pop();
 		o.undo();
 		redo.push(o);
+		GUI.updateUnRedo();
 	}
 	
 	/**
@@ -138,6 +139,7 @@ public class Operation
 		Operation o = redo.pop();
 		o.redo();
 		undo.push(o);
+		GUI.updateUnRedo();
 	}
 	
 	/**
@@ -152,6 +154,7 @@ public class Operation
 			undo.push(operation);
 			redo.clear(); //Once a new chain of action happens, redo is cleared
 		}
+		GUI.updateUnRedo();
 	}
 	
 	/**
