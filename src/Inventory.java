@@ -272,21 +272,35 @@ public class Inventory extends Observable {
 			PrintWriter writer = null;
 			try {
 				File file = chooser.getSelectedFile();
-				if (file.getName().lastIndexOf(".docx") == file.getName().length() - 5) {
+				
+				//Append valid extension if no extension is provided
+				if (!(file.getName().endsWith(".docx") || file.getName().endsWith(".txt"))) {
+					if (chooser.getFileFilter().getDescription().equals("Microsoft Word Document (.docx)")) {
+						file = new File(file.getPath() + ".docx");
+					}
+					else {
+						file = new File(file.getPath() + ".txt");
+					}
+				}
+				
+				if (file.getName().endsWith(".docx")) { //Write .docx file
 					writeToDocx(this.getListString(), file);
 					return; //if an exception is thrown, it will be caught below and display an error message
-					
 				}
+				else { //Write .txt file
+					file.createNewFile();
+					writer = new PrintWriter(file);
+					for(Item i: this.getGroceryList()) writer.println(i.getName() + " : " + i.amountToBuy());
+					writer.close();
+				}
+				/*
 				else if(file.getName().lastIndexOf(".txt") != file.getName().length() - 4) { //if NOT docx NOR txt export
 					JOptionPane.showMessageDialog(null, "\".txt\" or \".docx\" extension required!", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
+				*/
 				
-				//write text file
-				file.createNewFile();
-				writer = new PrintWriter(file);
-				for(Item i: this.getGroceryList()) writer.println(i.getName() + " : " + i.amountToBuy());
-				writer.close();
+				
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(null, "Error in Saving", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
