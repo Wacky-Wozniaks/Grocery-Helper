@@ -25,8 +25,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class ItemGUI extends JPanel
 {
@@ -46,12 +46,27 @@ public class ItemGUI extends JPanel
 	 */
 	public ItemGUI(Item item)
 	{
+		/*
+		 * If the user's computer is a Mac, then use the default Mac LookAndFeel
+		 * Otherwise, if the Nimbus LookAndFeel is installed, use that.
+		 * Otherwise, use the computer's default LookAndFeel.
+		 * 
+		 * Nimbus is not directly imported for potential compatibility issues between JRE 1.6 and 1.7
+		 * See: https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/nimbus.html
+		 */
 		try
 		{
-			if(!System.getProperty("os.name").contains("Mac"))
-				UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			if(!System.getProperty("os.name").contains("Mac")) {
+				for (LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
+					if ("Nimbus".equals(info.getName())) { 
+						UIManager.setLookAndFeel(info.getClassName());
+						break;
+					}
+				}
+			}
 		}
 		catch(Throwable e){}
+		
 		this.item = item;
 		createItemFrame(); //Initializes the frame that will pop up if the panel is clicked on.
 		

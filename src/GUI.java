@@ -27,9 +27,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class GUI extends JFrame
 {
@@ -44,10 +44,24 @@ public class GUI extends JFrame
 	 */
 	public GUI(ArrayList<Inventory> i)
 	{
+		/*
+		 * If the user's computer is a Mac, then use the default Mac LookAndFeel
+		 * Otherwise, if the Nimbus LookAndFeel is installed, use that.
+		 * Otherwise, use the computer's default LookAndFeel.
+		 * 
+		 * Nimbus is not directly imported for potential compatibility issues between JRE 1.6 and 1.7
+		 * See: https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/nimbus.html
+		 */
 		try
 		{
-			if(!System.getProperty("os.name").contains("Mac"))
-				UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			if(!System.getProperty("os.name").contains("Mac")) {
+				for (LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
+					if ("Nimbus".equals(info.getName())) { 
+						UIManager.setLookAndFeel(info.getClassName());
+						break;
+					}
+				}
+			}
 		}
 		catch(Throwable e){}
 		

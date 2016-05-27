@@ -38,8 +38,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.mail.*;
 import javax.mail.internet.*;
 
@@ -59,10 +59,27 @@ public class GroceryListGUI extends JFrame {
 	 */
 	public GroceryListGUI(final Inventory inventory) {
 		super("Grocery List");
-		try {
-			if(!System.getProperty("os.name").contains("Mac"))
-				UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		} catch (UnsupportedLookAndFeelException e) {}
+		
+		/*
+		 * If the user's computer is a Mac, then use the default Mac LookAndFeel
+		 * Otherwise, if the Nimbus LookAndFeel is installed, use that.
+		 * Otherwise, use the computer's default LookAndFeel.
+		 * 
+		 * Nimbus is not directly imported for potential compatibility issues between JRE 1.6 and 1.7
+		 * See: https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/nimbus.html
+		 */
+		try
+		{
+			if(!System.getProperty("os.name").contains("Mac")) {
+				for (LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
+					if ("Nimbus".equals(info.getName())) { 
+						UIManager.setLookAndFeel(info.getClassName());
+						break;
+					}
+				}
+			}
+		}
+		catch(Throwable e){}
 		
 		groceries = inventory.getGroceryList();
 		

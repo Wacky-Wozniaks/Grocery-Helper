@@ -33,7 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 public class InventoryGUI extends JPanel implements Observer
 {
@@ -54,10 +54,24 @@ public class InventoryGUI extends JPanel implements Observer
 	 */
 	public InventoryGUI(Inventory inv)
 	{
+		/*
+		 * If the user's computer is a Mac, then use the default Mac LookAndFeel
+		 * Otherwise, if the Nimbus LookAndFeel is installed, use that.
+		 * Otherwise, use the computer's default LookAndFeel.
+		 * 
+		 * Nimbus is not directly imported for potential compatibility issues between JRE 1.6 and 1.7
+		 * See: https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/nimbus.html
+		 */
 		try
 		{
-			if(!System.getProperty("os.name").contains("Mac"))
-				UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			if(!System.getProperty("os.name").contains("Mac")) {
+				for (LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
+					if ("Nimbus".equals(info.getName())) { 
+						UIManager.setLookAndFeel(info.getClassName());
+						break;
+					}
+				}
+			}
 		}
 		catch(Throwable e){}
 		
