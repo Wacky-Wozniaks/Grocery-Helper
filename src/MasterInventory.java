@@ -1,15 +1,26 @@
 /**
- * An inventory which contains all other inventories.
+ * A singleton class containing the inventory which contains all other inventories.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 5/26/2016
+ * @version 5/27/2016
  */
 
 import java.util.ArrayList;
 
 public class MasterInventory
 {
-	private static Inventory master = new Inventory("Master");
+	public static final String NAME = "Master";
+	private static Inventory master = new Inventory(NAME);
+	
+	/**
+	 * Returns the master inventory.
+	 * 
+	 * @return The master inventory.
+	 */
+	public static Inventory getInventory()
+	{
+		return master;
+	}
 	
 	/**
 	 * Adds all the other inventories to the master inventories.
@@ -28,6 +39,7 @@ public class MasterInventory
 	 * Adds the item to this inventory and the specific inventory.
 	 * 
 	 * @param item The item to add.
+	 * @return Whether the item was added successfully.
 	 */
 	public static boolean add(Item item)
 	{

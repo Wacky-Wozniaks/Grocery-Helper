@@ -2,7 +2,7 @@
  * A frame that allows the addition of new items to the inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/21/2016
+ * @version 05/27/2016
  */
 
 import java.awt.GridBagConstraints;
@@ -99,7 +99,7 @@ public class AddFrame extends JFrame
 				
 				//If the item already exists in the inventory, gives the option to merge the two values. If the item was added to the inventory, the
 				//update method will add it to the GUI
-				if(!inventory.add(i))
+				if(!MasterInventory.add(i))
 				{
 					int merge = JOptionPane.showConfirmDialog(addPanel, "<html>" + n + " already exists in this inventory with quantity " + 
 							inventory.get(n).getQuantity() + ".<br>" + "Would you like to merge the items?", "Item Already Exists", 

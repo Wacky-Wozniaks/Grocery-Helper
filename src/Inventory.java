@@ -2,7 +2,7 @@
  * Represents the inventory in a binary search tree
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/25/2016
+ * @version 05/27/2016
  */
 
 import java.awt.Color;
@@ -435,4 +435,13 @@ public class Inventory extends Observable {
 		return listString;
 	}
 	
+	/**
+	 * Returns this inventory as a string.
+	 * 
+	 * @return The inventory's name.
+	 */
+	public String toString()
+	{
+		return name;
+	}
 }

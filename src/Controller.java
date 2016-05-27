@@ -2,7 +2,7 @@
  * The main class for the project.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/24/2016
+ * @version 05/27/2016
  */
 
 import java.io.File;
@@ -27,6 +27,7 @@ public class Controller
 	public static void main(String[] args) throws IOException
 	{
 		inventories = importInventories();
+		MasterInventory.addInventories(inventories);
 		Operation.setEnabled(true); //Operations will now be added to the undo stack
 		new GUI(inventories);
 		/*

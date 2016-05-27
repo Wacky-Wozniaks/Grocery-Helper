@@ -2,7 +2,7 @@
  * The main GUI for the project.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/24/2016
+ * @version 05/27/2016
  */
 
 import java.awt.Color;
@@ -12,12 +12,18 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -25,6 +31,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -33,9 +40,14 @@ import javax.swing.border.LineBorder;
 
 public class GUI extends JFrame
 {
+	public static int WIDTH;
+	private static final String GHOST_TEXT = "Search Inventory...";
+	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
+	
 	private ArrayList<Inventory> inventories;
 	private Inventory selected;
 	private JPanel display, options;
+	private JTextField bar;
 	
 	/**
 	 * Constructs the GUI for the given inventories.
@@ -76,18 +88,81 @@ public class GUI extends JFrame
 		options = new JPanel();
 		panel.add(options, c);
 		c.gridy++;
+		
+		bar = new JTextField(20);
+		//searches the inventory as the keys are pressed
+		bar.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				String lowercase = bar.getText().toLowerCase();
+				for(Item i: selected.getInventory()) {
+					if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
+					else i.getGUI().setVisible(false);
+				}
+				selected.getGUI().removeScrollSpace();
+				selected.getGUI().addScrollSpace();
+			}
+		});
+		
+		//Adds and removes instructions for searching based on whether the textfield has focus
+		bar.setForeground(GHOST_COLOR);
+		bar.setText(GHOST_TEXT);
+		bar.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				if(bar.getForeground().equals(GHOST_COLOR) && bar.getText().equals(GHOST_TEXT)) {
+					bar.setForeground(Color.BLACK);
+					bar.setText("");
+				}
+			}
+			
+			public void focusLost(FocusEvent e) {
+				if(bar.getText().trim().equals("")) {
+					bar.setForeground(GHOST_COLOR);
+					bar.setText(GHOST_TEXT);
+				}
+			}
+		});		
+		
+		//Keyboard shortcut (CTRL-F or CMD-F) for searching
+		KeyStroke searchShortcut = KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		bar.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(searchShortcut, "search");
+		bar.getActionMap().put("search", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				bar.requestFocusInWindow(); //Make the search field have the focus
+			}
+		});
+		
+		//Adds items to the inventory 
+		JButton add = new JButton("Add Item");
+		add.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				newItem();
+			}
+		});
+		
+		JPanel upperBar = new JPanel();
+		upperBar.add(bar);
+		upperBar.add(add);
+		panel.add(upperBar, c);
+		c.gridy++;
+		WIDTH = upperBar.getPreferredSize().width;
+		
 		display = new JPanel();
 		panel.add(display, c);
 		
+		options.add(new InventoryButton(MasterInventory.getInventory()));
 		if(inventories != null && inventories.size() != 0)
 		{
 			for(Inventory inventory: inventories)
 			{
 				options.add(new InventoryButton(inventory));
 			}
-			updateSelected(inventories.get(0));
-			options.getComponent(0).setBackground(Color.LIGHT_GRAY);
 		}
+		updateSelected(MasterInventory.getInventory());
+		options.getComponent(0).setBackground(Color.LIGHT_GRAY);
 		
 		add(panel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -120,6 +195,7 @@ public class GUI extends JFrame
 		display.setVisible(false);
 		selected = i;
 		display.removeAll();
+		i.getGUI().resetBox();
 		display.add(i.getGUI());
 		display.setVisible(true);
 	}
@@ -157,7 +233,7 @@ public class GUI extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				new AddFrame(selected, "");
+				newItem();
 			}
 		});
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -225,10 +301,11 @@ public class GUI extends JFrame
 		inventory2.addActionListener(inventory.getActionListeners()[0]);
 		inventory2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		inventoryMenu.add(inventory2);
+		
 		JMenuItem removeInventory = new JMenuItem("Remove");
 		removeInventory.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				//if(selected.getName().equals(MasterInventory.NAME)) JOptionPane.showMessageDialog("The master inventory cannot ")
 			}
 		});
 		removeInventory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -237,6 +314,45 @@ public class GUI extends JFrame
 		menu.add(inventoryMenu);
 		
 		this.setJMenuBar(menu);
+	}
+	
+	/**
+	 * Creates a new add frame after testing to ensure that the selected inventory is not the master inventory.
+	 */
+	private void newItem()
+	{
+		if(selected.getName().equals(MasterInventory.NAME))
+		{
+			if(inventories.size() == 0) //There must be an inventory besides the master inventory to add items
+			{
+				JOptionPane.showMessageDialog(display, "<html>There are no inventories to add items to.<br>"
+						+ "Please create an inventory before adding items</html>", "No Inventories", JOptionPane.ERROR_MESSAGE, null);
+				return;
+			}
+			else
+			{
+				Object o = JOptionPane.showInputDialog(display, "Select an inventory to add the item to.", "Choose Inventory", JOptionPane.PLAIN_MESSAGE, null,
+						inventories.toArray(), inventories.get(0));
+				if(o != null)
+				{
+					new AddFrame(((Inventory) o), getSearchText()); //If the user did not hit cancel
+					updateSelected((Inventory) o);
+				}
+				return;
+			}
+		}
+		new AddFrame(selected, getSearchText());
+	}
+	
+	/**
+	 * Returns then contents of the search bar.
+	 * 
+	 * @return The text of the search bar, or an empty string if it contains the ghost text.
+	 */
+	private String getSearchText()
+	{
+		if(bar.getText().equals(GHOST_TEXT)) return "";
+		else return bar.getText();
 	}
 	
 	/**
