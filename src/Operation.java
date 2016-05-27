@@ -2,7 +2,7 @@
  * Represents an operation executed in the program, such as adding an item to an inventory or changing the quantity of an item.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/24/2016
+ * @version 05/27/2016
  */
 
 import java.util.Stack;
@@ -47,6 +47,7 @@ public class Operation
 	 */
 	private void undo()
 	{
+		enabled = false; //So that the actions taken to undo won't be added counted as something to undo.
 		if(operation == QUANTITY_CHANGE)
 		{
 			int oldVal = item.getQuantity();
@@ -67,7 +68,7 @@ public class Operation
 		}
 		else if(operation == ADDED) MasterInventory.remove(item);
 		else if(operation == REMOVED) MasterInventory.add(item);
-		redo.clear(); //Once a new chain of action happens, redo is cleared
+		enabled = true;
 	}
 	
 	/**
@@ -75,6 +76,7 @@ public class Operation
 	 */
 	private void redo()
 	{
+		enabled = false; //So that the actions taken to redo won't be added counted as something to undo.
 		if(operation == QUANTITY_CHANGE)
 		{
 			int oldVal = item.getQuantity();
@@ -95,6 +97,7 @@ public class Operation
 		}
 		else if(operation == ADDED) MasterInventory.add(item);
 		else if(operation == REMOVED) MasterInventory.remove(item);
+		enabled = true;
 	}
 	
 	/**
@@ -144,7 +147,11 @@ public class Operation
 	 */
 	public static void addToUndo(Operation operation)
 	{
-		if(enabled) undo.push(operation);
+		if(enabled)
+		{
+			undo.push(operation);
+			redo.clear(); //Once a new chain of action happens, redo is cleared
+		}
 	}
 	
 	/**
