@@ -9,13 +9,18 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 public class AddFrame extends JFrame
 {
@@ -46,6 +51,15 @@ public class AddFrame extends JFrame
 		g.gridx++;
 		name = new JTextField(text, 10);
 		addPanel.add(name, g);
+		
+		KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+		JPanel contentPane = (JPanel) this.getContentPane();
+		contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "close");
+		contentPane.getActionMap().put("close", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				AddFrame.this.dispose();
+			}
+		});
 		
 		intVals = new JTextField[VALUES.length];
 		for(int index = 0; index < VALUES.length; index++)
