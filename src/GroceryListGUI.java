@@ -22,7 +22,6 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 public class GroceryListGUI extends JFrame {
-	
 	private static final Dimension SCROLL_PANEL_SIZE = new Dimension(200, 300);
 	private List<Item> groceries;
 	

@@ -195,7 +195,7 @@ public class GUI extends JFrame
 	private void updateSelected(Inventory i)
 	{
 		for(Component tab: options.getComponents()) {
-			if (!i.equals(((InventoryButton) tab).getInventory())) {
+			if (!i.equals(((InventoryButton) tab).getInventory())) { //Set which inventory is selected
 				((InventoryButton) tab).setSelected(false);
 			}
 			else {
@@ -204,6 +204,9 @@ public class GUI extends JFrame
 			
 			if (!((InventoryButton) tab).getSelected() && !i.equals(((InventoryButton) tab).getInventory())) {
 				tab.setBackground(Color.WHITE);
+			}
+			else {
+				tab.setBackground(Color.LIGHT_GRAY);
 			}
 		}
 		
@@ -226,18 +229,28 @@ public class GUI extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				Object name =JOptionPane.showInputDialog(display, "Enter the name of the new inventory.", "Add Inventory", JOptionPane.PLAIN_MESSAGE);
+				Object name = JOptionPane.showInputDialog(display, "Enter the name of the new inventory.", "Add Inventory", JOptionPane.PLAIN_MESSAGE);
 				if(name == null) return;
 				Inventory i = new Inventory((String) name);
+				
+				while (inventories.contains(i) && name!= null) {
+					name = JOptionPane.showInputDialog(display, name + " is already an inventory. Enter a different"
+							+ " name", "Add Inventory", JOptionPane.PLAIN_MESSAGE);
+					i.setName((String) name);
+				}
+				
+				/*
 				for(; inventories.contains(i) && name != null; name = JOptionPane.showInputDialog(display, name + " is already an inventory. Enter a different"
 						+ " name", "Add Inventory", JOptionPane.PLAIN_MESSAGE)) //Prompts the user for a name until they enter a valid option
 				{
 					i.setName((String) name);
 				}
+				*/
 				if(name == null) return; //If the user chose to cancel after entering an invalid name
 				inventories.add(i);
 				options.add(new InventoryButton(i));
 				updateSelected(i);
+				GUI.this.pack();
 			}
 		});
 		inventory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -363,7 +376,9 @@ public class GUI extends JFrame
 				return;
 			}
 		}
-		new AddFrame(selected, getSearchText());
+		JFrame add = new AddFrame(selected, getSearchText());
+		add.setLocationRelativeTo(this);
+		add.setVisible(true);
 	}
 	
 	/**
@@ -401,7 +416,6 @@ public class GUI extends JFrame
 				public void mouseClicked(MouseEvent arg0)
 				{
 					updateSelected(inventory);
-					setBackground(Color.LIGHT_GRAY);
 					selected = true;
 				}
 				

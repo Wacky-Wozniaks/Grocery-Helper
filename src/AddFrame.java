@@ -74,7 +74,7 @@ public class AddFrame extends JFrame
 		
 		//Once the button is pressed, it will add the item to the inventory
 		JButton add = new JButton("Add");
-		final JFrame thisFrame = this; //I need this so I can dispose it at the end of the action listener
+		final JFrame thisFrame = this; //Required to dispose it at the end of the action listener
 		add.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -85,8 +85,6 @@ public class AddFrame extends JFrame
 				if(n.trim().equals(""))
 				{
 					error += "Invalid item name";
-					//JOptionPane.showMessageDialog(addPanel, "Invalid item name.", "", JOptionPane.ERROR_MESSAGE, null);
-					//return;
 				}
 				
 				//Tests that each input is a number
@@ -100,17 +98,12 @@ public class AddFrame extends JFrame
 					catch(Throwable e)
 					{
 						error += "\n" + VALUES[index] + " must be an integer.";
-						//JOptionPane.showMessageDialog(addPanel, VALUES[index] + " must be an integer.", "", JOptionPane.ERROR_MESSAGE, null);
-						//return;
 					}
 				}
 				
 				//Inform the user if the maximum quantity is set to smaller than the minimum quantity
 				if (values[2] < values[1]) {
 					error += "\n" + VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".";
-					
-					//JOptionPane.showMessageDialog(addPanel, VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".", "", JOptionPane.ERROR_MESSAGE, null);
-					//return;
 				}
 				
 				if (!error.equals("")) {
@@ -120,8 +113,6 @@ public class AddFrame extends JFrame
 				
 				//Constructs the item and adds it to the inventory
 				Item i = new Item(n, values[1], values[2], values[0], inventory);
-					
-				
 				
 				//If the item already exists in the inventory, gives the option to merge the two values. 
 				//If user chose to merge, the update method will add it to the GUI
@@ -139,7 +130,6 @@ public class AddFrame extends JFrame
 						else {
 							return;
 						}
-						
 					}
 					else { //If item is in the currently selected inventory
 						int merge = JOptionPane.showConfirmDialog(addPanel, "<html>" + n + " already exists in this inventory with quantity " + 
@@ -158,12 +148,12 @@ public class AddFrame extends JFrame
 		});
 	
 		this.setResizable(false);
-		
+				
 		g.gridy++;
 		g.gridx = 0;
 		addPanel.add(add, g);
 		add(addPanel);
 		pack();
-		setVisible(true);
+		//setVisible(true);
 	}
 }
