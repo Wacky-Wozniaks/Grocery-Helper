@@ -67,10 +67,12 @@ public class AddFrame extends JFrame
 			{
 				//Tests that the name is not an empty string.
 				String n = name.getText();
+				String error = ""; //Any error messages are added to this string
 				if(n.trim().equals(""))
 				{
-					JOptionPane.showMessageDialog(addPanel, "Invalid item name.", "", JOptionPane.ERROR_MESSAGE, null);
-					return;
+					error += "Invalid item name";
+					//JOptionPane.showMessageDialog(addPanel, "Invalid item name.", "", JOptionPane.ERROR_MESSAGE, null);
+					//return;
 				}
 				
 				//Tests that each input is a number
@@ -83,19 +85,29 @@ public class AddFrame extends JFrame
 					}
 					catch(Throwable e)
 					{
-						JOptionPane.showMessageDialog(addPanel, VALUES[index] + " must be an integer.", "", JOptionPane.ERROR_MESSAGE, null);
-						return;
+						error += "\n" + VALUES[index] + " must be an integer.";
+						//JOptionPane.showMessageDialog(addPanel, VALUES[index] + " must be an integer.", "", JOptionPane.ERROR_MESSAGE, null);
+						//return;
 					}
+				}
+				
+				//Inform the user if the maximum quantity is set to smaller than the minimum quantity
+				if (values[2] < values[1]) {
+					error += "\n" + VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".";
+					
+					//JOptionPane.showMessageDialog(addPanel, VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".", "", JOptionPane.ERROR_MESSAGE, null);
+					//return;
+				}
+				
+				if (!error.equals("")) {
+					JOptionPane.showMessageDialog(addPanel, error, "", JOptionPane.ERROR_MESSAGE, null);
+					return;
 				}
 				
 				//Constructs the item and adds it to the inventory
 				Item i = new Item(n, values[1], values[2], values[0], inventory);
 					
-				//Inform the user if the maximum quantity is set to smaller than the minimum quantity
-				if (values[2] < values[1]) {
-					JOptionPane.showMessageDialog(addPanel, VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".", "", JOptionPane.ERROR_MESSAGE, null);
-					return;
-				}
+				
 				
 				//If the item already exists in the inventory, gives the option to merge the two values. 
 				//If user chose to merge, the update method will add it to the GUI
@@ -123,7 +135,6 @@ public class AddFrame extends JFrame
 						{
 							inventory.merge(i);
 							inventory.get(n).getGUI().updateQuantity();
-							
 						}
 						else return;
 					}
