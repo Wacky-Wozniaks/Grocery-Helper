@@ -97,20 +97,36 @@ public class AddFrame extends JFrame
 					return;
 				}
 				
-				//If the item already exists in the inventory, gives the option to merge the two values. If the item was added to the inventory, the
-				//update method will add it to the GUI
+				//If the item already exists in the inventory, gives the option to merge the two values. 
+				//If user chose to merge, the update method will add it to the GUI
 				if(!MasterInventory.add(i))
 				{
-					int merge = JOptionPane.showConfirmDialog(addPanel, "<html>" + n + " already exists in this inventory with quantity " + 
-							inventory.get(n).getQuantity() + ".<br>" + "Would you like to merge the items?", "Item Already Exists", 
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-					if(merge == JOptionPane.YES_OPTION)
-					{
-						inventory.merge(i);
-						inventory.get(n).getGUI().updateQuantity();
+					if (inventory.get(n) == null) { //If the item is in another inventory, not in the currently selected one
+						Inventory invenContained = MasterInventory.getInventory().get(n).getInventory(); //Find the inventory the Item is contained in
+						int merge = JOptionPane.showConfirmDialog(addPanel, "<html>" + n + " already exists in the inventory " + invenContained +
+								" with quantity " + invenContained.get(n).getQuantity() + ".<br>" + "Would you like to merge the items into that inventory?",
+								"Item Already Exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						if(merge == JOptionPane.YES_OPTION) {
+							invenContained.merge(i);
+							invenContained.get(n).getGUI().updateQuantity();	
+						}
+						else {
+							return;
+						}
 						
 					}
-					else return;
+					else { //If item is in the currently selected inventory
+						int merge = JOptionPane.showConfirmDialog(addPanel, "<html>" + n + " already exists in this inventory with quantity " + 
+								inventory.get(n).getQuantity() + ".<br>" + "Would you like to merge the items?", "Item Already Exists", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						if(merge == JOptionPane.YES_OPTION)
+						{
+							inventory.merge(i);
+							inventory.get(n).getGUI().updateQuantity();
+							
+						}
+						else return;
+					}
 				}
 				thisFrame.dispose();
 			}

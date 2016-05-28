@@ -23,7 +23,7 @@ public class MasterInventory
 	}
 	
 	/**
-	 * Adds all the other inventories to the master inventories.
+	 * Adds all the other inventories to the master inventory.
 	 * 
 	 * @param inventories The list of all the other inventories.
 	 */
