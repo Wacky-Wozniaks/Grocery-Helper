@@ -350,7 +350,15 @@ public class ItemGUI extends JPanel
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				MasterInventory.remove(item);
+				int merge = JOptionPane.showConfirmDialog(frame, "Are you sure you wish to remove the item " + item.getName() + "?", "Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				
+				if(merge == JOptionPane.YES_OPTION) {
+					MasterInventory.remove(item);	
+				}
+				else {
+					return;
+				}
+				
 				frame.dispose();
 			}
 		});
