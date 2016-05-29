@@ -25,6 +25,7 @@ public class Controller
 	{
 		Inventories.importInventories();
 		Operation.setEnabled(true); //Operations will now be added to the undo stack
+		GUI.createGUI();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				WebLookAndFeel.install();
@@ -51,6 +52,4 @@ public class Controller
 			}
 		});
 	}
-	
-	
 }
