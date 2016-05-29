@@ -2,7 +2,7 @@
  * A frame that allows the addition of new items to the inventory.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/27/2016
+ * @version 05/28/2016
  */
 
 import java.awt.GridBagConstraints;
@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
