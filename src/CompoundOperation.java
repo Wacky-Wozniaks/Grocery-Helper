@@ -13,12 +13,9 @@ public class CompoundOperation extends Operation
 	
 	/**
 	 * Constructs the compound operation.
-	 * 
-	 * @param i The inventory items were changed in.
 	 */
-	public CompoundOperation(Inventory i)
+	public CompoundOperation()
 	{
-		super(i, Operation.QUANTITY_CHANGE); //Assumes that the operation is changing quantities due to a grocery list because that is the only implementation
 		operations = new LinkedList<Operation>();
 	}
 	

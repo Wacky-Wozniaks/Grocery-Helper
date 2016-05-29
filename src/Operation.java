@@ -57,6 +57,11 @@ public class Operation
 	}
 	
 	/**
+	 * A constructor that can only be used from CompoundOperation as it does not need the same parameters.
+	 */
+	protected Operation(){}
+	
+	/**
 	 * Reverses the operation to undo it.
 	 */
 	protected void undo()
@@ -200,12 +205,10 @@ public class Operation
 	
 	/**
 	 * Creates a new compound operation and adds it to the stack. Until the compound operation is ended, all actions will be added to it.
-	 * 
-	 * @param i The inventory the compound operation relates to.
 	 */
-	public static void startCompound(Inventory i)
+	public static void startCompound()
 	{
-		undo.push(new CompoundOperation(i));
+		undo.push(new CompoundOperation());
 		compound = true;
 	}
 	

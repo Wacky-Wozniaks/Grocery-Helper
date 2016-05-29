@@ -108,7 +108,7 @@ public class GroceryListGUI extends JFrame {
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				Operation.startCompound(inventory);
+				Operation.startCompound();
 				for(Item i: groceries)
 				{
 					i.setQuantity(i.getMax());
