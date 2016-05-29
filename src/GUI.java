@@ -231,13 +231,14 @@ public class GUI extends JFrame
 				Inventory i = new Inventory((String) name);
 				
 
-				while (Inventories.getList().contains(i) && name!= null) {
+				while ((name!= null && !((String)name).trim().equals("")) && (Inventories.getList().contains(i) || name.equals(MasterInventory.NAME))) {
 					name = JOptionPane.showInputDialog(display, name + " is already an inventory. Enter a different"
 							+ " name", "Add Inventory", JOptionPane.PLAIN_MESSAGE);
 					i.setName((String) name);
 				}
 				
-				if(name == null) return; //If the user chose to cancel after entering an invalid name
+				if(name == null || ((String)name).trim().equals("")) return; //If the user chose to cancel after entering an invalid name, treats an empty
+						//string as the same as cancel
 				Inventories.addInventory(i);
 			}
 		});
