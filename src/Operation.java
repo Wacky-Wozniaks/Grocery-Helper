@@ -2,7 +2,7 @@
  * Represents an operation executed in the program, such as adding an item to an inventory or changing the quantity of an item.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/27/2016
+ * @version 05/28/2016
  */
 
 import java.util.Stack;
@@ -16,9 +16,10 @@ public class Operation
 	private Item item;
 	private int operation; //One of the constants from above
 	private int changed; //Stores any values involved in quantity or limit changes
+	private Inventory inventory; //If the operation relates to an inventory instead of an item
 	
 	/**
-	 * Constructs an operation with all of its parameters.
+	 * Constructs an operation for an item with all of its parameters.
 	 * 
 	 * @param item The item changed.
 	 * @param operation What was done to the item.
@@ -32,7 +33,7 @@ public class Operation
 	}
 	
 	/**
-	 * Constructs an operation without a changed value, such as for adding an item.
+	 * Constructs an operation for an item without a changed value, such as for adding an item.
 	 * 
 	 * @param item The item changed.
 	 * @param operation What was done to the item.
@@ -40,6 +41,18 @@ public class Operation
 	public Operation(Item item, int operation)
 	{
 		this(item, operation, 0);
+	}
+	
+	/**
+	 * Constructs an operation for an inventory.
+	 * 
+	 * @param inventory The inventory added or removed.
+	 * @param operation What was done to the item, should be either adding or removing.
+	 */
+	public Operation(Inventory inventory, int operation)
+	{
+		this.inventory = inventory;
+		this.operation = operation;
 	}
 	
 	/**
@@ -66,8 +79,16 @@ public class Operation
 			item.setMax(changed);
 			changed = oldVal;
 		}
-		else if(operation == ADDED) MasterInventory.remove(item);
-		else if(operation == REMOVED) MasterInventory.add(item);
+		else if(operation == ADDED)
+		{
+			if(item != null) MasterInventory.remove(item);
+			else Inventories.removeInventory(inventory);
+		}
+		else if(operation == REMOVED)
+		{
+			if(item != null) MasterInventory.add(item);
+			else Inventories.addInventory(inventory);
+		}
 		enabled = true;
 	}
 	
@@ -95,8 +116,16 @@ public class Operation
 			item.setMax(changed);
 			changed = oldVal;
 		}
-		else if(operation == ADDED) MasterInventory.add(item);
-		else if(operation == REMOVED) MasterInventory.remove(item);
+		else if(operation == ADDED)
+		{
+			if(item != null) MasterInventory.add(item);
+			else Inventories.addInventory(inventory);
+		}
+		else if(operation == REMOVED)
+		{
+			if(item != null) MasterInventory.remove(item);
+			else Inventories.removeInventory(inventory);
+		}
 		enabled = true;
 	}
 	

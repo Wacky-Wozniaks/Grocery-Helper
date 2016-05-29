@@ -2,7 +2,7 @@
  * The main GUI for the project.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/27/2016
+ * @version 05/28/2016
  */
 
 import java.awt.Color;
@@ -18,7 +18,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -40,6 +39,7 @@ import javax.swing.border.LineBorder;
 
 public class GUI extends JFrame
 {
+	public static GUI gui; //This is a terrible implementation which I will change later.
 	public static int WIDTH;
 	private static final String GHOST_TEXT = "Search Inventory...";
 	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
@@ -47,17 +47,14 @@ public class GUI extends JFrame
 	final static JMenuItem undo = new JMenuItem("Undo"); //Undoes the last operation
 	final static JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
 	
-	private ArrayList<Inventory> inventories;
 	private Inventory selected;
 	private JPanel display, options;
 	private JTextField bar;
 	
 	/**
 	 * Constructs the GUI for the given inventories.
-	 * 
-	 * @param i The inventories in the program.
 	 */
-	public GUI(ArrayList<Inventory> i)
+	public GUI()
 	{
 		/*
 		 * If the user's computer is a Mac, then use the default Mac LookAndFeel
@@ -82,7 +79,6 @@ public class GUI extends JFrame
 		
 		addMenu();
 		
-		inventories = i;
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
@@ -157,9 +153,9 @@ public class GUI extends JFrame
 		panel.add(display, c);
 		
 		options.add(new InventoryButton(MasterInventory.getInventory()));
-		if(inventories != null && inventories.size() != 0)
+		if(Inventories.getList() != null && Inventories.getList().size() != 0)
 		{
-			for(Inventory inventory: inventories)
+			for(Inventory inventory: Inventories.getList())
 			{
 				options.add(new InventoryButton(inventory));
 			}
@@ -173,6 +169,7 @@ public class GUI extends JFrame
 		setVisible(true);
 		this.setResizable(false);
 		requestFocus(); //makes the frame get the focus
+		gui = this;
 	}
 	
 	/**
@@ -233,24 +230,15 @@ public class GUI extends JFrame
 				if(name == null) return;
 				Inventory i = new Inventory((String) name);
 				
-				while (inventories.contains(i) && name!= null) {
+
+				while (Inventories.getList().contains(i) && name!= null) {
 					name = JOptionPane.showInputDialog(display, name + " is already an inventory. Enter a different"
 							+ " name", "Add Inventory", JOptionPane.PLAIN_MESSAGE);
 					i.setName((String) name);
 				}
 				
-				/*
-				for(; inventories.contains(i) && name != null; name = JOptionPane.showInputDialog(display, name + " is already an inventory. Enter a different"
-						+ " name", "Add Inventory", JOptionPane.PLAIN_MESSAGE)) //Prompts the user for a name until they enter a valid option
-				{
-					i.setName((String) name);
-				}
-				*/
 				if(name == null) return; //If the user chose to cancel after entering an invalid name
-				inventories.add(i);
-				options.add(new InventoryButton(i));
-				updateSelected(i);
-				GUI.this.pack();
+				Inventories.addInventory(i);
 			}
 		});
 		inventory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -340,7 +328,13 @@ public class GUI extends JFrame
 		JMenuItem removeInventory = new JMenuItem("Remove");
 		removeInventory.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//if(selected.getName().equals(MasterInventory.NAME)) JOptionPane.showMessageDialog("The master inventory cannot ")
+				if(selected.getName().equals(MasterInventory.NAME))
+				{
+					JOptionPane.showMessageDialog(display, "The master inventory cannot be removed.", 
+						"Invalid Removal", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				Inventories.removeInventory(selected);
 			}
 		});
 		removeInventory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -358,7 +352,7 @@ public class GUI extends JFrame
 	{
 		if(selected.getName().equals(MasterInventory.NAME))
 		{
-			if(inventories.size() == 0) //There must be an inventory besides the master inventory to add items
+			if(Inventories.getList().size() == 0) //There must be an inventory besides the master inventory to add items
 			{
 				JOptionPane.showMessageDialog(display, "<html>There are no inventories to add items to.<br>"
 						+ "Please create an inventory before adding items</html>", "No Inventories", JOptionPane.ERROR_MESSAGE, null);
@@ -367,7 +361,7 @@ public class GUI extends JFrame
 			else
 			{
 				Object o = JOptionPane.showInputDialog(display, "Select an inventory to add the item to.", "Choose Inventory", JOptionPane.PLAIN_MESSAGE, null,
-						inventories.toArray(), inventories.get(0));
+						Inventories.getList().toArray(), Inventories.getList().get(0));
 				if(o != null)
 				{
 					new AddFrame(((Inventory) o), getSearchText()); //If the user did not hit cancel
@@ -447,5 +441,41 @@ public class GUI extends JFrame
 		public void setSelected(boolean s) {
 			selected = s;
 		}
+	}
+	
+	/**
+	 * Updates the display to contain the new inventory.
+	 * 
+	 * @param i The new inventory
+	 */
+	public void addInventory(Inventory i)
+	{
+		Operation.addToUndo(new Operation(i, Operation.ADDED));
+		options.add(new InventoryButton(i));
+		updateSelected(i);
+		pack();
+	}
+	
+	/**
+	 * Updates the display to remove the inventory.
+	 * 
+	 * @param i The deleted inventory
+	 */
+	public void removeInventory(Inventory i)
+	{
+		Operation.addToUndo(new Operation(i, Operation.REMOVED));
+		for(Component c: options.getComponents())
+		{
+			if(c instanceof InventoryButton)
+			{
+				if(((InventoryButton)c).getInventory().equals(i))
+				{
+					options.remove(c);
+					break;
+				}
+			}
+		}
+		updateSelected(MasterInventory.getInventory());
+		pack();
 	}
 }
