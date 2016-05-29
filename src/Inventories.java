@@ -14,8 +14,9 @@ import java.util.Scanner;
 
 public class Inventories
 {
-	private static ArrayList<Inventory> inventories; //loads the inventories on startup of the 
+	private static ArrayList<Inventory> inventories;
 	private static final String INVENTORY_FILE_LOC = "inventories.ilist";
+	private static GUI gui; //Keeps track of the main GUI involved in the program
 	
 	/**
 	 * Returns the ArrayList of inventories.
@@ -28,6 +29,16 @@ public class Inventories
 	}
 	
 	/**
+	 * Sets the GUI to the value.
+	 * 
+	 * @param g The GUI for the program.
+	 */
+	public static void setGUI(GUI g)
+	{
+		gui = g;
+	}
+	
+	/**
 	 * Adds an inventory to the list.
 	 * 
 	 * @param i The inventory to be added.
@@ -35,13 +46,13 @@ public class Inventories
 	public static void addInventory(Inventory i)
 	{
 		inventories.add(i);
-		GUI.gui.addInventory(i);
+		gui.addInventory(i);
 	}
 	
 	public static void removeInventory(Inventory i)
 	{
 		inventories.remove(i);
-		GUI.gui.removeInventory(i);
+		gui.removeInventory(i);
 	}
 	
 	/**

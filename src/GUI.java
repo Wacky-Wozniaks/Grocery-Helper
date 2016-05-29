@@ -39,7 +39,6 @@ import javax.swing.border.LineBorder;
 
 public class GUI extends JFrame
 {
-	public static GUI gui; //This is a terrible implementation which I will change later.
 	public static int WIDTH;
 	private static final String GHOST_TEXT = "Search Inventory...";
 	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
@@ -169,7 +168,7 @@ public class GUI extends JFrame
 		setVisible(true);
 		this.setResizable(false);
 		requestFocus(); //makes the frame get the focus
-		gui = this;
+		Inventories.setGUI(this);
 	}
 	
 	/**
