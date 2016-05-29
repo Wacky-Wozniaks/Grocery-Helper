@@ -327,7 +327,9 @@ public class GUI
 						"Invalid Removal", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				Inventories.removeInventory(selected);
+				int choice = JOptionPane.showConfirmDialog(gui, "Are you sure you want to remove this inventory?", "Confirm Remove", 
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+				if(choice == JOptionPane.YES_OPTION) Inventories.removeInventory(selected);
 			}
 		});
 		removeInventory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
