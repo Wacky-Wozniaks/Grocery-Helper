@@ -12,6 +12,7 @@ public class Operation
 	public static final int QUANTITY_CHANGE = 1, MIN_CHANGE = 2, MAX_CHANGE = 3, ADDED = 4, REMOVED = 5; //The different operations
 	private static Stack<Operation> undo = new Stack<Operation>(), redo = new Stack<Operation>(); //Stacks of the last commands the program has made
 	private static boolean enabled = false; //Whether current actions are being added to the stack so that adding items when the program starts isn't counted
+	private static boolean compound = false; //If compound is true, operations will be added to the compound operation at the top of the stack
 	
 	private Item item;
 	private int operation; //One of the constants from above
@@ -58,7 +59,7 @@ public class Operation
 	/**
 	 * Reverses the operation to undo it.
 	 */
-	private void undo()
+	protected void undo()
 	{
 		enabled = false; //So that the actions taken to undo won't be added counted as something to undo.
 		if(operation == QUANTITY_CHANGE)
@@ -95,7 +96,7 @@ public class Operation
 	/**
 	 * Performs the operation to redo it.
 	 */
-	private void redo()
+	protected void redo()
 	{
 		enabled = false; //So that the actions taken to redo won't be added counted as something to undo.
 		if(operation == QUANTITY_CHANGE)
@@ -180,7 +181,8 @@ public class Operation
 	{
 		if(enabled)
 		{
-			undo.push(operation);
+			if(compound) ((CompoundOperation) undo.peek()).add(operation);
+			else undo.push(operation);
 			redo.clear(); //Once a new chain of action happens, redo is cleared
 		}
 		GUI.updateUnRedo();
@@ -194,5 +196,24 @@ public class Operation
 	public static void setEnabled(boolean e)
 	{
 		enabled = e;
+	}
+	
+	/**
+	 * Creates a new compound operation and adds it to the stack. Until the compound operation is ended, all actions will be added to it.
+	 * 
+	 * @param i The inventory the compound operation relates to.
+	 */
+	public static void startCompound(Inventory i)
+	{
+		undo.push(new CompoundOperation(i));
+		compound = true;
+	}
+	
+	/**
+	 * Stops adding operations to the compound operation.
+	 */
+	public static void endCompound()
+	{
+		compound = false;
 	}
 }

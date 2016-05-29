@@ -2,7 +2,7 @@
  * The GUI that has the Grocery List and allows exporting of the list.
  * 
  * @author Julia McClellan, Luke Giacalone, Hyun Choi
- * @version 05/27/2016
+ * @version 05/28/2016
  */
 
 import java.awt.Dimension;
@@ -108,11 +108,13 @@ public class GroceryListGUI extends JFrame {
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
+				Operation.startCompound(inventory);
 				for(Item i: groceries)
 				{
 					i.setQuantity(i.getMax());
 				}
 				dispose();
+				Operation.endCompound();
 			}
 		});
 		c.gridy++;
