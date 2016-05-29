@@ -37,7 +37,7 @@ public class GroceryListGUI extends JFrame {
 		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
 		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
 		 * Otherwise, use the computer's default LookAndFeel.
-		 */
+		 *
 		try
 		{
 			if(!System.getProperty("os.name").contains("Mac")) {
@@ -45,6 +45,7 @@ public class GroceryListGUI extends JFrame {
 			}
 		}
 		catch(Throwable e){}
+		*/
 		
 		groceries = inventory.getGroceryList();
 		

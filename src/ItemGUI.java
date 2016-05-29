@@ -50,7 +50,7 @@ public class ItemGUI extends JPanel
 		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
 		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
 		 * Otherwise, use the computer's default LookAndFeel.
-		 */
+		 *
 		try
 		{
 			if(!System.getProperty("os.name").contains("Mac")) {
@@ -58,6 +58,7 @@ public class ItemGUI extends JPanel
 			}
 		}
 		catch(Throwable e){}
+		*/
 		
 		this.item = item;
 		createItemFrame(); //Initializes the frame that will pop up if the panel is clicked on.

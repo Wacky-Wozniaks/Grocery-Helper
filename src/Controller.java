@@ -8,6 +8,12 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
+import com.alee.laf.WebLookAndFeel;
+
+
+
 public class Controller
 {
 	/**
@@ -19,7 +25,14 @@ public class Controller
 	{
 		Inventories.importInventories();
 		Operation.setEnabled(true); //Operations will now be added to the undo stack
-		new GUI();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				WebLookAndFeel.install();
+				new GUI();
+			}
+		});
+		
+		
 		/*
 		 * Sets so that whenever the user quits the program the following code is run.
 		 * This code exports all the inventories then the list of inventories so that they

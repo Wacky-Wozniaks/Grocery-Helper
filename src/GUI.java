@@ -67,7 +67,7 @@ public class GUI extends JFrame
 		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
 		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
 		 * Otherwise, use the computer's default LookAndFeel.
-		 */
+		 *
 		try
 		{
 			if(!System.getProperty("os.name").contains("Mac")) {
@@ -75,6 +75,7 @@ public class GUI extends JFrame
 			}
 		}
 		catch(Throwable e){}
+		*/
 		
 		addMenu();
 		
