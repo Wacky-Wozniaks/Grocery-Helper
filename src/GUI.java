@@ -339,7 +339,7 @@ public class GUI
 		aboutMenu.add(aboutGH);
 		
 		JMenuItem legal = new JMenuItem("Legal Information"); //Third party library licensing
-		removeInventory.addActionListener(new ActionListener() {
+		legal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Information(Information.ABOUT_LEGAL);
 			}
@@ -347,7 +347,7 @@ public class GUI
 		aboutMenu.add(legal);
 		
 		JMenuItem license = new JMenuItem("EULA"); //Third party library licensing
-		removeInventory.addActionListener(new ActionListener() {
+		license.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Information(Information.ABOUT_LICENSE);
 			}
