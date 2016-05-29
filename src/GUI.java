@@ -153,6 +153,13 @@ public class GUI
 		gui.setVisible(true);
 		gui.setResizable(false);
 		gui.requestFocus(); //makes the frame get the focus
+		
+		if(Inventories.getList().size() == 0) //If there are no inventories, instructs the user on what to do
+		{
+			JOptionPane.showMessageDialog(gui, "<html>To start using GroceryHelper, you first need to create an inventory.<br>"
+					+ "Inventories are collections of items, which you can categorize<br>based on location, such as refrigerator or pantry, or category,<br>"
+					+ "such as fruit or meat.</html>", "Instructions", JOptionPane.INFORMATION_MESSAGE, null);
+		}
 	}
 	
 	/**
