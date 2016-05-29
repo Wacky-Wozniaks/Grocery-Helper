@@ -64,22 +64,14 @@ public class GUI extends JFrame
 	public GUI()
 	{
 		/*
-		 * If the user's computer is a Mac, then use the default Mac LookAndFeel
-		 * Otherwise, if the Nimbus LookAndFeel is installed, use that.
+		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
+		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
 		 * Otherwise, use the computer's default LookAndFeel.
-		 * 
-		 * Nimbus is not directly imported for potential compatibility issues between JRE 1.6 and 1.7
-		 * See: https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/nimbus.html
 		 */
 		try
 		{
 			if(!System.getProperty("os.name").contains("Mac")) {
-				for (LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
-					if ("Nimbus".equals(info.getName())) { 
-						UIManager.setLookAndFeel(info.getClassName());
-						break;
-					}
-				}
+				UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
 			}
 		}
 		catch(Throwable e){}
