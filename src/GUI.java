@@ -392,12 +392,8 @@ public class GUI extends JFrame
 			{
 				Object o = JOptionPane.showInputDialog(display, "Select an inventory to add the item to.", "Choose Inventory", JOptionPane.PLAIN_MESSAGE, null,
 						Inventories.getList().toArray(), Inventories.getList().get(0));
-				if(o != null)
-				{
-					new AddFrame(((Inventory) o), getSearchText()); //If the user did not hit cancel
-					updateSelected((Inventory) o);
-				}
-				return;
+				if(o != null) updateSelected((Inventory) o); //If the user did not hit cancel
+				else return;
 			}
 		}
 		JFrame add = new AddFrame(selected, getSearchText());
