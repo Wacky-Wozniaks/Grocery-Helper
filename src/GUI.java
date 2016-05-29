@@ -16,52 +16,35 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
-public class GUI extends JFrame
+public class GUI
 {
 	public static int WIDTH;
 	private static final String GHOST_TEXT = "Search Inventory...";
 	private static final Color GHOST_COLOR = Color.LIGHT_GRAY;
 	
-	final static JMenuItem undo = new JMenuItem("Undo"); //Undoes the last operation
-	final static JMenuItem redo = new JMenuItem("Redo"); //Redoes the last undone operation
-	
-	private Inventory selected;
-	private JPanel display, options;
-	private JTextField bar;
+	private static JFrame gui;
+	private static Inventory selected;
+	private static JPanel display, options;
+	private static JTextField bar;
+	private static JMenuItem undo, redo;
 	
 	/**
 	 * Constructs the GUI for the given inventories.
 	 */
-	public GUI()
+	public static void createGUI()
 	{
 		/*
 		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
@@ -77,6 +60,7 @@ public class GUI extends JFrame
 		catch(Throwable e){}
 		*/
 		
+		gui = new JFrame();
 		addMenu();
 		
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -163,13 +147,12 @@ public class GUI extends JFrame
 		updateSelected(MasterInventory.getInventory());
 		options.getComponent(0).setBackground(Color.LIGHT_GRAY);
 		
-		add(panel);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		pack();
-		setVisible(true);
-		this.setResizable(false);
-		requestFocus(); //makes the frame get the focus
-		Inventories.setGUI(this);
+		gui.add(panel);
+		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		gui.pack();
+		gui.setVisible(true);
+		gui.setResizable(false);
+		gui.requestFocus(); //makes the frame get the focus
 	}
 	
 	/**
@@ -189,7 +172,7 @@ public class GUI extends JFrame
 	 * 
 	 * @param i The inventory to display.
 	 */
-	private void updateSelected(Inventory i)
+	public static void updateSelected(Inventory i)
 	{
 		for(Component tab: options.getComponents()) {
 			if (!i.equals(((InventoryButton) tab).getInventory())) { //Set which inventory is selected
@@ -215,7 +198,7 @@ public class GUI extends JFrame
 		display.setVisible(true);
 	}
 	
-	private void addMenu() {
+	private static void addMenu() {
 		JMenuBar menu = new JMenuBar();
 		
 		JMenu file = new JMenu("File");
@@ -290,6 +273,7 @@ public class GUI extends JFrame
 		
 		JMenu edit = new JMenu("Edit");
 		
+		undo = new JMenuItem("Undo");
 		undo.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -304,6 +288,7 @@ public class GUI extends JFrame
 		undo.setEnabled(false);
 		edit.add(undo);
 		
+		redo = new JMenuItem("Redo");
 		redo.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -370,16 +355,13 @@ public class GUI extends JFrame
 		aboutMenu.add(license);
 		menu.add(aboutMenu);
 		
-		
-		
-		
-		this.setJMenuBar(menu);
+		gui.setJMenuBar(menu);
 	}
 	
 	/**
 	 * Creates a new add frame after testing to ensure that the selected inventory is not the master inventory.
 	 */
-	private void newItem()
+	private static void newItem()
 	{
 		if(selected.getName().equals(MasterInventory.NAME))
 		{
@@ -398,7 +380,7 @@ public class GUI extends JFrame
 			}
 		}
 		JFrame add = new AddFrame(selected, getSearchText());
-		add.setLocationRelativeTo(this);
+		add.setLocationRelativeTo(gui);
 		add.setVisible(true);
 	}
 	
@@ -407,215 +389,10 @@ public class GUI extends JFrame
 	 * 
 	 * @return The text of the search bar, or an empty string if it contains the ghost text.
 	 */
-	private String getSearchText()
+	private static String getSearchText()
 	{
 		if(bar.getText().equals(GHOST_TEXT)) return "";
 		else return bar.getText();
-	}
-	
-	/**
-	 * A button for the menu bar to select an inventory.
-	 */
-	private class InventoryButton extends JPanel
-	{
-		private Inventory inventory;
-		private boolean selected;
-		/**
-		 * Constructs the panel.
-		 * 
-		 * @param i The inventory to be selected with this panel.
-		 */
-		public InventoryButton(Inventory i)
-		{
-			inventory = i;
-			selected = false;
-			setBorder(BorderFactory.createCompoundBorder(new LineBorder(Color.BLACK, 1, true), new EmptyBorder(2, 2, 2, 2)));
-			setBackground(Color.WHITE);
-			add(new JLabel(i.getName()));
-			addMouseListener(new MouseListener()
-			{
-				public void mouseClicked(MouseEvent arg0)
-				{
-					updateSelected(inventory);
-					selected = true;
-				}
-				
-				public void mouseEntered(MouseEvent arg0)
-				{
-					setBackground(Color.LIGHT_GRAY);
-				}
-				
-				public void mouseExited(MouseEvent arg0)
-				{
-					if (!selected){
-						setBackground(Color.WHITE);
-					}
-				}
-				
-				public void mousePressed(MouseEvent arg0){}
-				public void mouseReleased(MouseEvent arg0){}
-			});
-		}
-		
-		public boolean getSelected() {
-			return selected;
-		}
-		
-		public Inventory getInventory() {
-			return inventory;
-		}
-		
-		public void setSelected(boolean s) {
-			selected = s;
-		}
-	}
-	
-	/**
-	 * Window to display information about the program or display legal/copyright information
-	 */
-	private class Information extends JFrame {
-		//Location of each information file
-		private static final String INFORMATION_LOC = "resources/INFORMATION.info";
-		private static final String LEGAL_LOC = "resources/LEGAL.info";
-		private static final String LICENSE_LOC = "resources/LICENSE.info";
-		
-		//Constants to denote which window to open
-		private static final int ABOUT_GH = 1;
-		private static final int ABOUT_LEGAL = 2;
-		private static final int ABOUT_LICENSE = 3;
-		
-		//Essential components of the window
-		private JPanel panel;
-		private JScrollPane scrollPanel;
-		private JTextArea textArea;
-		
-		/**
-		 * Instantiates a new Information window
-		 * 
-		 * @param The information of the window to open
-		 */
-		public Information (int window) {
-			/*
-			try
-			{
-				if(!System.getProperty("os.name").contains("Mac")) {
-					for (LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
-						if ("Nimbus".equals(info.getName())) { 
-							UIManager.setLookAndFeel(info.getClassName());
-							break;
-						}
-					}
-				}
-			}
-			catch(Throwable e){}
-			*/
-			
-			super("Information");
-			panel = new JPanel();
-			add(panel);
-			
-			textArea = new JTextArea();
-			textArea.setColumns(20);
-			textArea.setLineWrap(true);
-			textArea.setRows(5);
-			textArea.setWrapStyleWord(true);
-			textArea.setEditable(false);
-			
-			
-			
-			try {
-				initText(window);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			scrollPanel = new JScrollPane(textArea);
-			System.out.println("FINAL TEXT AREA TEXT: " + textArea.getText());
-			panel.add(scrollPanel);
-			this.add(panel);
-			
-			
-			/*
-			//Open window that corresponds to what window was prompted
-			if (window == ABOUT_GH) {
-				initGH();
-			}
-			else if (window == ABOUT_LEGAL) {
-				initLegal();
-			}
-			else if (window == ABOUT_LICENSE) {
-				initLicense();
-			}
-			else { //If none of these selections, something went wrong
-				throw new IllegalArgumentException();
-			}
-			*/
-			
-			this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-			this.pack();
-			this.setVisible(true);
-		}
-		
-		/**
-		 * Initializes text conttent
-		 * @throws IOException 
-		 */
-		private void initText(int window) throws IOException {
-			System.out.println("inittext");
-			//Open window that corresponds to what window was prompted
-			if (window == ABOUT_GH) {
-				System.out.println("about gh");
-				setTitle("About GroceryHelper");
-				add(new JLabel("About GroceryHelper"));
-				
-				String line = "";
-				try {
-					FileReader reader = new FileReader(INFORMATION_LOC);
-					BufferedReader buffer = new BufferedReader(reader);
-					
-					while (line != null) {
-						//System.out.println("appending " + line);
-						textArea.append(line + "\n");
-						line = buffer.readLine();
-						//System.out.println("content " + textArea.getText());
-					}
-					buffer.close();
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-					throw new IOException();
-				}
-			}
-			else if (window == ABOUT_LEGAL) {
-				setTitle("Legal Information");
-				add(new JLabel("Legal Information"));
-				
-				try {
-					InputStream in = getClass().getResourceAsStream(LEGAL_LOC);
-					textArea.read(new InputStreamReader(in), null);
-				}
-				catch (IOException e) {
-					throw new IOException();
-				}
-			}
-			else if (window == ABOUT_LICENSE) {
-				setTitle("End-User License Agreement");
-				add(new JLabel("Legal Information"));
-				
-				try {
-					InputStream in = getClass().getResourceAsStream(LICENSE_LOC);
-					textArea.read(new InputStreamReader(in), null);
-				}
-				catch (IOException e) {
-					throw new IOException();
-				}
-			}
-			else { //If none of these selections, something went wrong
-				throw new IllegalArgumentException();
-			}
-		}
 	}
 	
 	/**
@@ -623,12 +400,12 @@ public class GUI extends JFrame
 	 * 
 	 * @param i The new inventory
 	 */
-	public void addInventory(Inventory i)
+	public static void addInventory(Inventory i)
 	{
 		Operation.addToUndo(new Operation(i, Operation.ADDED));
 		options.add(new InventoryButton(i));
 		updateSelected(i);
-		pack();
+		gui.pack();
 	}
 	
 	/**
@@ -636,7 +413,7 @@ public class GUI extends JFrame
 	 * 
 	 * @param i The deleted inventory
 	 */
-	public void removeInventory(Inventory i)
+	public static void removeInventory(Inventory i)
 	{
 		Operation.addToUndo(new Operation(i, Operation.REMOVED));
 		for(Component c: options.getComponents())
@@ -651,6 +428,6 @@ public class GUI extends JFrame
 			}
 		}
 		updateSelected(MasterInventory.getInventory());
-		pack();
+		gui.pack();
 	}
 }
