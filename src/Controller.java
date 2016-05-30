@@ -8,12 +8,7 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-
-import com.alee.laf.WebLookAndFeel;
-
-
 
 public class Controller
 {
