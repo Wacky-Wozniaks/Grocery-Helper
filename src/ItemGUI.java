@@ -24,8 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.LineBorder;
 
 public class ItemGUI extends JPanel
@@ -45,21 +43,7 @@ public class ItemGUI extends JPanel
 	 * @param item The item to create components for.
 	 */
 	public ItemGUI(Item item)
-	{
-		/*
-		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
-		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
-		 * Otherwise, use the computer's default LookAndFeel.
-		 *
-		try
-		{
-			if(!System.getProperty("os.name").contains("Mac")) {
-				UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-			}
-		}
-		catch(Throwable e){}
-		*/
-		
+	{	
 		this.item = item;
 		createItemFrame(); //Initializes the frame that will pop up if the panel is clicked on.
 		

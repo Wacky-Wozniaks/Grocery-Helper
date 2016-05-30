@@ -20,8 +20,6 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 public class InventoryGUI extends JPanel implements Observer
 {
@@ -40,19 +38,6 @@ public class InventoryGUI extends JPanel implements Observer
 	 */
 	public InventoryGUI(Inventory inv)
 	{
-		/*
-		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
-		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
-		 * Otherwise, use the computer's default LookAndFeel.
-		 *
-		try
-		{
-			if(!System.getProperty("os.name").contains("Mac")) {
-				UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-			}
-		}
-		catch(Throwable e){}
-		*/
 		this.inventory = inv;
 		panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();

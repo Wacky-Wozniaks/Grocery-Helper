@@ -369,7 +369,7 @@ public class GUI
 			}
 		}
 		bar.setText("");
-		search();
+		search(); //Resets the search bar so that if the name was entered other items will show up as well
 		JFrame add = new AddFrame(selected, getSearchText());
 		add.setLocationRelativeTo(gui);
 		add.setVisible(true);

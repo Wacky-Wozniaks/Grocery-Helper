@@ -18,8 +18,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 public class GroceryListGUI extends JFrame {
 	private static final Dimension SCROLL_PANEL_SIZE = new Dimension(200, 300);
@@ -32,20 +30,6 @@ public class GroceryListGUI extends JFrame {
 	 */
 	public GroceryListGUI(final Inventory inventory) {
 		super("Grocery List");
-		
-		/*
-		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
-		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
-		 * Otherwise, use the computer's default LookAndFeel.
-		 *
-		try
-		{
-			if(!System.getProperty("os.name").contains("Mac")) {
-				UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-			}
-		}
-		catch(Throwable e){}
-		*/
 		
 		groceries = inventory.getGroceryList();
 		
