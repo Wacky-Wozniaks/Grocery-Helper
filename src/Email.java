@@ -85,7 +85,7 @@ public class Email {
 		Scanner scan;
 		final String pw;
 		try {
-			scan = new Scanner(new File("resources/email.compsci"));
+			scan = new Scanner(new File("email.compsci"));
 			pw = scan.nextLine();
 			scan.close(); //close the Scanner
 		}

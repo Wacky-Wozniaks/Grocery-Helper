@@ -40,26 +40,62 @@ public class Information extends JFrame {
 	 * @param The information of the window to open
 	 */
 	public Information (int window) {
+		/*
+			try
+			{
+				if(!System.getProperty("os.name").contains("Mac")) {
+					for (LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
+						if ("Nimbus".equals(info.getName())) { 
+							UIManager.setLookAndFeel(info.getClassName());
+							break;
+						}
+					}
+				}
+			}
+			catch(Throwable e){}
+		 */
+
 		super("Information");
 		panel = new JPanel();
 		add(panel);
 
 		textArea = new JTextArea();
-		textArea.setColumns(30);
+		textArea.setColumns(20);
 		textArea.setLineWrap(true);
-		textArea.setRows(45);
+		textArea.setRows(5);
 		textArea.setWrapStyleWord(true);
 		textArea.setEditable(false);
+
+
 
 		try {
 			initText(window);
 		} catch (IOException e) {}
 
+
 		scrollPanel = new JScrollPane(textArea);
+		System.out.println("FINAL TEXT AREA TEXT: " + textArea.getText());
 		panel.add(scrollPanel);
 		this.add(panel);
-		
-		this.setResizable(false);
+
+
+		/*
+			//Open window that corresponds to what window was prompted
+			if (window == ABOUT_GH) {
+				initGH();
+			}
+			else if (window == ABOUT_LEGAL) {
+				initLegal();
+			}
+			else if (window == ABOUT_LICENSE) {
+				initLicense();
+			}
+			else { //If none of these selections, something went wrong
+				throw new IllegalArgumentException();
+			}
+		 */
+
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		this.pack();
 		this.setVisible(true);
 	}
@@ -69,43 +105,57 @@ public class Information extends JFrame {
 	 * @throws IOException 
 	 */
 	private void initText(int window) throws IOException {
-		FileReader reader = null;
-		
+		System.out.println("inittext");
 		//Open window that corresponds to what window was prompted
 		if (window == ABOUT_GH) {
+			System.out.println("about gh");
 			setTitle("About GroceryHelper");
 			add(new JLabel("About GroceryHelper"));
-			reader = new FileReader(INFORMATION_LOC);
+
+			String line = "";
+			try {
+				FileReader reader = new FileReader(INFORMATION_LOC);
+				BufferedReader buffer = new BufferedReader(reader);
+
+				while (line != null) {
+					//System.out.println("appending " + line);
+					textArea.append(line + "\n");
+					line = buffer.readLine();
+					//System.out.println("content " + textArea.getText());
+				}
+				buffer.close();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				throw new IOException();
+			}
 		}
 		else if (window == ABOUT_LEGAL) {
 			setTitle("Legal Information");
 			add(new JLabel("Legal Information"));
-			reader = new FileReader(LEGAL_LOC);
+
+			try {
+				InputStream in = getClass().getResourceAsStream(LEGAL_LOC);
+				textArea.read(new InputStreamReader(in), null);
+			}
+			catch (IOException e) {
+				throw new IOException();
+			}
 		}
 		else if (window == ABOUT_LICENSE) {
 			setTitle("End-User License Agreement");
 			add(new JLabel("Legal Information"));
-			reader = new FileReader(LICENSE_LOC);
+
+			try {
+				InputStream in = getClass().getResourceAsStream(LICENSE_LOC);
+				textArea.read(new InputStreamReader(in), null);
+			}
+			catch (IOException e) {
+				throw new IOException();
+			}
 		}
 		else { //If none of these selections, something went wrong
 			throw new IllegalArgumentException();
 		}
-		
-		
-		//Load text into the text area
-		BufferedReader buffer = new BufferedReader(reader);
-		String line = "";
-		try {
-			while (line != null) {
-				textArea.append(line + "\n");
-				line = buffer.readLine();
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			throw new IOException();
-		}
-		reader.close();
-		buffer.close();
 	}
 }
