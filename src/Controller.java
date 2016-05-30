@@ -25,13 +25,21 @@ public class Controller
 	{
 		Inventories.importInventories();
 		Operation.setEnabled(true); //Operations will now be added to the undo stack
-		GUI.createGUI();
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				WebLookAndFeel.install();
-				new GUI();
+		
+		try
+		{
+			if(!System.getProperty("os.name").contains("Mac")) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						WebLookAndFeel.install();
+					}
+				});
 			}
-		});
+			GUI.createGUI();
+		}
+		catch(Throwable e){}
+		
+		
 		
 		
 		/*
