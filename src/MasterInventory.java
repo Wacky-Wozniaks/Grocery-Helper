@@ -50,10 +50,25 @@ public class MasterInventory
 	
 	/**
 	 * Removes the item from the inventory and the specific inventory.
+	 * 
+	 * @param item The item to remove.
 	 */
 	public static void remove(Item item)
 	{
 		master.remove(item);
 		item.getInventory().remove(item);
+	}
+	
+	/**
+	 * Removes all the items in the given inventory.
+	 * 
+	 * @param inventory THe inventory to remove all the items from.
+	 */
+	public static void remove(Inventory inventory)
+	{
+		for(Item item: inventory.getInventory())
+		{
+			master.remove(item);
+		}
 	}
 }

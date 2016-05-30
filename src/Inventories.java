@@ -38,9 +38,15 @@ public class Inventories
 		GUI.addInventory(i);
 	}
 	
+	/**
+	 * Removes the inventory from the list.
+	 * 
+	 * @param i The inventory to remove.
+	 */
 	public static void removeInventory(Inventory i)
 	{
 		inventories.remove(i);
+		MasterInventory.remove(i);
 		GUI.removeInventory(i);
 	}
 	
