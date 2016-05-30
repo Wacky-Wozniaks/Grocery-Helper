@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import com.alee.laf.WebLookAndFeel;
 
@@ -28,19 +29,14 @@ public class Controller
 		
 		try
 		{
-			if(!System.getProperty("os.name").contains("Mac")) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						WebLookAndFeel.install();
-					}
-				});
+			//If the computer is not a Mac, use WebLookAndFeel design
+			//If the computer IS a mac, just use the default Mac LAF.
+			if (!System.getProperty("os.name").contains("Mac")) {
+				UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
 			}
 			GUI.createGUI();
 		}
 		catch(Throwable e){}
-		
-		
-		
 		
 		/*
 		 * Sets so that whenever the user quits the program the following code is run.
