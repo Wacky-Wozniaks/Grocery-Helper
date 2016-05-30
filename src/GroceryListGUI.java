@@ -97,6 +97,8 @@ public class GroceryListGUI extends JFrame {
 		c.gridy++;
 		panel.add(add, c);
 		
+		this.setLocationRelativeTo(GUI.getGUI());
+		
 		this.add(panel);
 		this.pack();
 		this.setResizable(false);

@@ -256,7 +256,7 @@ public class Inventory extends Observable {
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Microsoft Word Document (.docx)","docx"));
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Plain Text Document (.txt)","txt"));
 		chooser.setAcceptAllFileFilterUsed(false);
-		int option = chooser.showSaveDialog(null);
+		int option = chooser.showSaveDialog(GUI.getGUI());
 		if(option == JFileChooser.APPROVE_OPTION) {
 			PrintWriter writer = null;
 			try {
@@ -339,12 +339,12 @@ public class Inventory extends Observable {
 			
 			if (job.printDialog()) { //Display the standard print dialog and attempt to print if valid selection is made
 				job.print();
-				JOptionPane.showMessageDialog(null, "Sent to printer!", "Printer Job Sent", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(GUI.getGUI(), "Sent to printer!", "Printer Job Sent", JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 		} 
 		catch (Throwable e1) {
-			JOptionPane.showMessageDialog(null, "Print failed!", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(GUI.getGUI(), "Print failed!", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 	}

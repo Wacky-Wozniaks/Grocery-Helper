@@ -6,10 +6,11 @@
  */
 
 import java.awt.Dimension;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Properties;
-import java.util.Scanner;
 
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -23,19 +24,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class Email {
-	
+	private static String pw;
 	/**
 	 * Exports the grocery list of the inventory and sends it as an email.
 	 */
 	public static void exportListToEmail(String listString) {
-		//JOptionPane sending;
 		JDialog sending;
 		try {
-			String emailAddr = (String) JOptionPane.showInputDialog(null, "Enter your email address:",
+			String emailAddr = (String) JOptionPane.showInputDialog(GUI.getGUI(), "Enter your email address:",
 					"Email My Shopping List", JOptionPane.PLAIN_MESSAGE);
 			sending = new JDialog((JFrame) null, "Grocery List", false);
 			sending.add(new JLabel("Sending..."));
-			sending.setLocationRelativeTo(null);
 			sending.setPreferredSize(new Dimension(300, 150));
 			sending.pack();
 			sending.setVisible(true);
@@ -47,20 +46,21 @@ public class Email {
 			
 			if (!sendEmail(emailAddr, listString)) { //Attempts to send the email
 				sending.dispose();
+				sending.setVisible(false);
 				throw new RuntimeException(); //If email doesn't go through, throw an exception
 			}
 			else { //Confirms successful sending
 				sending.dispose();
-				JOptionPane.showMessageDialog(null, "Email sent!", "Emailed list", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(GUI.getGUI(), "Email sent!", "Emailed list", JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 		} 
 		catch (IllegalArgumentException e1) { //Error message for invalid email address
-			JOptionPane.showMessageDialog(null, "Invalid email address!", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(GUI.getGUI(), "Invalid email address!", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		catch (Throwable e2) { //Error message for all other sending failures
-			JOptionPane.showMessageDialog(null, "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(GUI.getGUI(), "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 	}
@@ -81,16 +81,20 @@ public class Email {
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.port", "465");
 
-		//Local save file that contains the super secret password to the Gmail account
-		Scanner scan;
-		final String pw;
+		//Load local save file that contains the super secret password to the Gmail account
+		pw = null;
+		InputStream email = Email.class.getClassLoader().getResourceAsStream("email.compsci");
 		try {
-			scan = new Scanner(new File("resources/email.compsci"));
-			pw = scan.nextLine();
-			scan.close(); //close the Scanner
+			BufferedReader reader = new BufferedReader(new InputStreamReader(email));
+			pw = reader.readLine();
+			System.out.println("password is " + pw);
+			email.close();
 		}
-		catch (FileNotFoundException e1) {
-			return false;
+		catch (IOException e1) {
+			return false; //Error in reading password file
+		}
+		catch (NullPointerException e2) {
+			return false; //Error in reading password file
 		}
 
 		//Logs in to the account with given authenticaion information

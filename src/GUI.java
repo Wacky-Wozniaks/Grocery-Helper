@@ -143,6 +143,13 @@ public class GUI
 	}
 	
 	/**
+	 * Returns the JFrame that represents the entire GUI. 
+	 */
+	public static JFrame getGUI() {
+		return gui;
+	}
+	
+	/**
 	 * Checks whether or not the Undo and Redo buttons should be enabled and toggles them accordingly.	
 	 */
 	public static void updateUnRedo() {
