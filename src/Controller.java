@@ -19,19 +19,20 @@ public class Controller
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		Inventories.importInventories();
-		Operation.setEnabled(true); //Operations will now be added to the undo stack
-		
 		try
 		{
 			//If the computer is not a Mac, use WebLookAndFeel design
 			//If the computer IS a mac, just use the default Mac LAF.
 			if (!System.getProperty("os.name").contains("Mac")) {
 				UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
-			}
-			GUI.createGUI();
+			}	
 		}
 		catch(Throwable e){}
+		
+		Inventories.importInventories();
+		Operation.setEnabled(true); //Operations will now be added to the undo stack
+		
+		GUI.createGUI();
 		
 		/*
 		 * Sets so that whenever the user quits the program the following code is run.
