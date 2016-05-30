@@ -100,6 +100,9 @@ public class AddFrame extends JFrame
 					}
 				}
 				
+				if(values[0] < 0) error += "\nThe quantity cannot be negative.";
+				if(values[1] <= 0) error += "\nThe limits cannot be less than or equal to zero.";
+				
 				//Inform the user if the maximum quantity is set to smaller than the minimum quantity
 				if (values[2] < values[1]) {
 					error += "\n" + VALUES[2] + " must be greater than or equal to " + VALUES[1] + ".";
