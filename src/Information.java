@@ -5,6 +5,8 @@
  * @version 5/29/2016
  */
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -45,11 +47,10 @@ public class Information extends JFrame {
 		add(panel);
 
 		textArea = new JTextArea();
-		textArea.setColumns(30);
 		textArea.setLineWrap(true);
-		textArea.setRows(45);
 		textArea.setWrapStyleWord(true);
 		textArea.setEditable(false);
+		
 
 		try {
 			initText(window);
@@ -60,7 +61,10 @@ public class Information extends JFrame {
 		this.add(panel);
 		
 		this.setResizable(false);
+		this.setPreferredSize(new Dimension(300, (int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2)));
 		this.pack();
+		scrollPanel.setPreferredSize(new Dimension((int) this.getPreferredSize().getWidth() - 15, 
+				(int) this.getPreferredSize().getHeight() - 35));
 		this.setVisible(true);
 	}
 
