@@ -46,20 +46,6 @@ public class GUI
 	 */
 	public static void createGUI()
 	{
-		/*
-		 * If the user's computer is a Mac, then use the default Mac LookAndFeel.
-		 * Otherwise, use the SeaGlass LookAndFeel, if it can be accessed properly.
-		 * Otherwise, use the computer's default LookAndFeel.
-		 *
-		try
-		{
-			if(!System.getProperty("os.name").contains("Mac")) {
-				UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-			}
-		}
-		catch(Throwable e){}
-		*/
-		
 		gui = new JFrame();
 		addMenu();
 		
@@ -78,13 +64,7 @@ public class GUI
 			public void keyTyped(KeyEvent e) {}
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
-				String lowercase = bar.getText().toLowerCase();
-				for(Item i: selected.getInventory()) {
-					if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
-					else i.getGUI().setVisible(false);
-				}
-				selected.getGUI().removeScrollSpace();
-				selected.getGUI().addScrollSpace();
+				search();
 			}
 		});
 		
@@ -388,6 +368,8 @@ public class GUI
 				else return;
 			}
 		}
+		bar.setText("");
+		search();
 		JFrame add = new AddFrame(selected, getSearchText());
 		add.setLocationRelativeTo(gui);
 		add.setVisible(true);
@@ -438,5 +420,19 @@ public class GUI
 		}
 		updateSelected(MasterInventory.getInventory());
 		gui.pack();
+	}
+	
+	/**
+	 * Updates the GUI based on the search bar text.
+	 */
+	private static void search()
+	{
+		String lowercase = bar.getText().toLowerCase();
+		for(Item i: selected.getInventory()) {
+			if(i.getName().toLowerCase().contains(lowercase)) i.getGUI().setVisible(true);
+			else i.getGUI().setVisible(false);
+		}
+		selected.getGUI().removeScrollSpace();
+		selected.getGUI().addScrollSpace();
 	}
 }
