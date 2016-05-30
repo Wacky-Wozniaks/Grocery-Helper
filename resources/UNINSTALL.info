@@ -1,0 +1,4 @@
+UNINSTALL INFORMATION
+
+Macintosh OSX:
+To delete the application, remove the “GroceryHelper.app” file. Then, navigate to “~/Library/Application Support/WackyWozniaks” and delete the GroceryHelper folder.

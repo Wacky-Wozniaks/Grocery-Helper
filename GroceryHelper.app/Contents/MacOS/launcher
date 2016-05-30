@@ -1,9 +1,9 @@
 #!/bin/sh
-# Author: Luke Giacalone
+# Author: Wacky Wozniaks Company
 
 # Constants
 JAVA_MAJOR=1
-JAVA_MINOR=7
+JAVA_MINOR=6
 APP_JAR="GroceryHelper.jar"
 APP_NAME="GroceryHelper"
 VM_ARGS=""

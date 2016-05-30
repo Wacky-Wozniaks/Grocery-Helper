@@ -349,6 +349,14 @@ public class GUI
 			}
 		});
 		aboutMenu.add(license);
+		
+		JMenuItem uninstall = new JMenuItem("Uninstall");
+		uninstall.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Information(Information.ABOUT_UNINSTALL);
+			}
+		});
+		aboutMenu.add(uninstall);
 		menu.add(aboutMenu);
 		
 		gui.setJMenuBar(menu);

@@ -44,7 +44,7 @@ public class Controller
 				for(Inventory i: Inventories.getList()) {
 					try {
 						i.exportInventory();
-					} catch (IOException e) {}
+					} catch (IOException e) {e.printStackTrace();}
 				}
 				try {
 					Inventories.exportInventories();

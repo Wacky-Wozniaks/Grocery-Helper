@@ -27,12 +27,14 @@ public class Information extends JFrame {
 	public static final int ABOUT_GH = 1;
 	public static final int ABOUT_LEGAL = 2;
 	public static final int ABOUT_LICENSE = 3;
+	public static final int ABOUT_UNINSTALL = 4;
 
 	//Location of each file
 	private static final String INFORMATION_LOC = "INFORMATION.info";
 	private static final String LEGAL_LOC = "LEGAL.info";
 	private static final String LICENSE_LOC = "LICENSE.info";
 	private static final String LOGO_LOC = "LOGO.png";
+	private static final String UNINSTALL_LOC= "UNINSTALL.info";
 
 	//Essential components of the window
 	private JPanel panel;
@@ -136,6 +138,11 @@ public class Information extends JFrame {
 				setTitle("End User License Agreement");
 				add(new JLabel("Legal Information"));
 				textStream = getClass().getClassLoader().getResourceAsStream(LICENSE_LOC);
+			}
+			else if(window == ABOUT_UNINSTALL) {
+				setTitle("Uninstall Information");
+				add(new JLabel("Uninstall Information"));
+				textStream = getClass().getClassLoader().getResourceAsStream(UNINSTALL_LOC);
 			}
 			else { //If none of these selections, something went wrong
 				throw new IllegalArgumentException();

@@ -37,6 +37,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 public class Inventory extends Observable {
 	
 	private static final String EXTENSION = ".inventory";
+	private static final String PREFIX = System.getProperty("user.home") + "/Library/Application Support/WackyWozniaks/GroceryHelper/";
 	
 	private TreeMap<String, Item> inventory;
 	private String name;
@@ -58,7 +59,7 @@ public class Inventory extends Observable {
 			inventory.put(i.getName().toLowerCase(), i);
 		}
 		this.name = name;
-		fileName = name + EXTENSION;
+		fileName = PREFIX + name + EXTENSION;
 		file = new File(fileName);
 	}
 	
@@ -70,7 +71,7 @@ public class Inventory extends Observable {
 	public Inventory(String name) {
 		inventory = new TreeMap<String, Item>();
 		this.name = name;
-		fileName = name + EXTENSION;
+		fileName = PREFIX + name + EXTENSION;
 		file = new File(fileName);
 	}
 	
@@ -102,7 +103,7 @@ public class Inventory extends Observable {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		fileName = name + EXTENSION;
+		fileName = PREFIX + name + EXTENSION;
 		File newFile = new File(fileName);
 		if(file.exists()) file.renameTo(newFile);
 		file = newFile;
@@ -114,7 +115,9 @@ public class Inventory extends Observable {
 	 * @throws IOException if the file cannot be created
 	 */
 	public void exportInventory() throws IOException {
+		file.getParentFile().mkdirs();
 		if(!file.exists()) file.createNewFile();
+		
 		PrintWriter writer = new PrintWriter(file);
 		for(Item i: inventory.values()) writer.println(i.getName() + "," + i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
 					+ i.getCode());

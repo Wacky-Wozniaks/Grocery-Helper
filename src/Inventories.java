@@ -15,7 +15,8 @@ import java.util.Scanner;
 public class Inventories
 {
 	private static ArrayList<Inventory> inventories;
-	private static final String INVENTORY_FILE_LOC = "inventories.ilist";
+	private static final String INVENTORY_FILE_LOC = System.getProperty("user.home") 
+			+ "/Library/Application Support/WackyWozniaks/GroceryHelper/inventories.ilist";
 	
 	/**
 	 * Returns the ArrayList of inventories.
@@ -79,6 +80,7 @@ public class Inventories
 	 */
 	public static void exportInventories() throws IOException {
 		File file = new File(INVENTORY_FILE_LOC);
+		file.getParentFile().mkdirs();
 		
 		if(!file.exists()) file.createNewFile();
 		PrintWriter writer = new PrintWriter(file);
