@@ -46,7 +46,7 @@ public class GUI
 	 */
 	public static void createGUI()
 	{
-		gui = new JFrame();
+		gui = new JFrame("GroceryHelper");
 		addMenu();
 		
 		JPanel panel = new JPanel(new GridBagLayout());

@@ -7,7 +7,6 @@
 
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,12 +39,11 @@ public class Information extends JFrame {
 	private JPanel panel;
 	private JTextArea textArea;
 	private JScrollPane scrollPanel;
-	private JLabel textLabel; //Only used for About GroceryHelper window
+	private JLabel logoLabel, caption;
 	
-	//Preferred width and height for windows (one-third of screen width, one-half of screen height, respectively)
-	//The HEIGHT field is not used for the About GroceryHelper window
-	private static final int WIDTH = (int) (Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 4);
-	private static final int HEIGHT = (int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2);
+	//Preferred width and height for windows
+	private static final int WIDTH = 500;
+	private static final int HEIGHT = 500;
 	
 	/**
 	 * Instantiates a new Information window
@@ -57,8 +55,7 @@ public class Information extends JFrame {
 		super("Information");
 		panel = new JPanel();
 		add(panel);
-
-		textLabel = new JLabel();
+		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
 		try {
 			initText(window);
@@ -67,15 +64,10 @@ public class Information extends JFrame {
 			//Something went wrong
 		}
 
-		if (window == ABOUT_GH) {
-			panel.add(textLabel);
-		}
-		else {
-			panel.add(scrollPanel);
-		}
-		textLabel.setVerticalAlignment(JLabel.CENTER);
+		panel.add(scrollPanel);
 		this.add(panel);
 		
+		panel.setVisible(true);
 		this.setResizable(false);
 		this.pack();
 		this.setVisible(true);
@@ -89,80 +81,63 @@ public class Information extends JFrame {
 		InputStream textStream; //Stream and Buffer of text to feed into a String, taken from a file with a given location
 		BufferedReader buffer;
 		
-		//Open window that corresponds to what window was prompted
+		textArea = new JTextArea();
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setEditable(false);
+		scrollPanel = new JScrollPane(textArea);
 		if (window == ABOUT_GH) {
 			setTitle("About GroceryHelper");
-			add(new JLabel("About GroceryHelper"));
 			textStream = getClass().getClassLoader().getResourceAsStream(INFORMATION_LOC);
 			
-			//Load text into the text area
-			String text = "<html><p style=\"width:" + (int) (this.getPreferredSize().getWidth()*2) +
-					"px; font-size:11px;\">";
 			BufferedImage logo = ImageIO.read(getClass().getResource(LOGO_LOC));
-			JLabel logoLabel = new JLabel();
-			int sideLength = (int) (this.getPreferredSize().getWidth()*1.33); //Side length of square "logo box"
-			logoLabel.setPreferredSize(new Dimension(sideLength, sideLength)); //Logo's width and height is the width of the window
-			ImageIcon logoIcon = new ImageIcon(logo.getScaledInstance(logoLabel.getPreferredSize().width,
-					logoLabel.getPreferredSize().height, Image.SCALE_SMOOTH)); //Scale the logo itself
+			logoLabel = new JLabel();
+			ImageIcon logoIcon = new ImageIcon(logo.getScaledInstance((int) (this.getPreferredSize().getWidth()/2),
+					(int) (this.getPreferredSize().getHeight()/2), Image.SCALE_SMOOTH)); //Scale the logo itself
 			logoLabel.setIcon(logoIcon);
 			logoLabel.setVerticalAlignment(JLabel.CENTER);
 			logoLabel.setHorizontalAlignment(JLabel.CENTER);
 			panel.add(logoLabel);
-			
-			String line = "";
-			buffer = new BufferedReader(new InputStreamReader(textStream));
-			while (line != null) {
-				line = buffer.readLine();
-				if (line != null) {
-					text += (line + "<br>"); //Build the entire String, line by line
-				}
-			}
-			text += "</p></html>";
-			textLabel.setText(text);
-			this.setPreferredSize(new Dimension((int) (this.getPreferredSize().getWidth()*4), (int) textLabel.getPreferredSize().getHeight() + 40));
-		}
-		else { //If one of other two windows opened
-			this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-			
-			textArea = new JTextArea();
-			textArea.setLineWrap(true);
-			textArea.setWrapStyleWord(true);
-			textArea.setEditable(false);
-			
-			if (window == ABOUT_LEGAL) {
-				setTitle("Legal Information");
-				add(new JLabel("Legal Information"));
-				textStream = getClass().getClassLoader().getResourceAsStream(LEGAL_LOC);
-			}
-			else if (window == ABOUT_LICENSE) {
-				setTitle("End User License Agreement");
-				add(new JLabel("Legal Information"));
-				textStream = getClass().getClassLoader().getResourceAsStream(LICENSE_LOC);
-			}
-			else if(window == ABOUT_UNINSTALL) {
-				setTitle("Uninstall Information");
-				add(new JLabel("Uninstall Information"));
-				textStream = getClass().getClassLoader().getResourceAsStream(UNINSTALL_LOC);
-			}
-			else { //If none of these selections, something went wrong
-				throw new IllegalArgumentException();
-			}
-			
-			String text = "";
-			String line = "";
-			buffer = new BufferedReader(new InputStreamReader(textStream));
-			while (line != null) {
-				line = buffer.readLine();
-				if (line != null) {
-					text += line + "\n"; //Build the entire String, line by line
-				}
-			}
-			
-			textArea.setText(text);
-			textArea.setCaretPosition(0); //After adding text, scroll back to the top
 			scrollPanel = new JScrollPane(textArea);
-			scrollPanel.setPreferredSize(new Dimension((int) this.getPreferredSize().getWidth(), 
-							(int) this.getPreferredSize().getHeight()));
+			scrollPanel.setPreferredSize(new Dimension(WIDTH - 20, 
+							(int) (HEIGHT - logoLabel.getPreferredSize().getHeight() - 50))); //dimensions of scrollpane so they fit in the window
 		}
+		else if (window == ABOUT_LEGAL) {
+			setTitle("Legal Information");
+			caption = new JLabel("Usage of Third Party Libraries");
+			textStream = getClass().getClassLoader().getResourceAsStream(LEGAL_LOC);
+		}
+		else if (window == ABOUT_LICENSE) {
+			setTitle("EULA");
+			caption = new JLabel("GroceryHelper™ License Agreement");
+			textStream = getClass().getClassLoader().getResourceAsStream(LICENSE_LOC);
+		}
+		else if(window == ABOUT_UNINSTALL) {
+			setTitle("Uninstall Information");
+			caption = new JLabel("Uninstall Information");
+			textStream = getClass().getClassLoader().getResourceAsStream(UNINSTALL_LOC);
+		}
+		else { //If none of these selections, something went wrong
+			throw new IllegalArgumentException();
+		}
+		
+		String text = "";
+		String line = "";
+		buffer = new BufferedReader(new InputStreamReader(textStream));
+		while (line != null) {
+			line = buffer.readLine();
+			if (line != null) {
+				text += line + "\n"; //Build the entire String, line by line
+			}
+		}
+		
+		if (window != ABOUT_GH) {
+			panel.add(caption);
+			scrollPanel.setPreferredSize(new Dimension(WIDTH - 20, 
+							(int) (HEIGHT - caption.getPreferredSize().getHeight() - 40)));
+		}
+		textArea.setText(text);
+		textArea.setCaretPosition(0); //After adding text, scroll back to the top
+		
 	}
 }

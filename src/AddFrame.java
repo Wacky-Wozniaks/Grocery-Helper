@@ -156,6 +156,5 @@ public class AddFrame extends JFrame
 		addPanel.add(add, g);
 		add(addPanel);
 		pack();
-		//setVisible(true);
 	}
 }

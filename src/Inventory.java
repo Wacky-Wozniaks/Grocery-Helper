@@ -156,17 +156,11 @@ public class Inventory extends Observable {
 			in.close();
 			for (Entry<Object, Object> entry: props.entrySet()) {
 				String[] attributes = ((String) (entry.getValue())).split(",");
-				System.out.println("props entryset: " + entry.toString());
-				System.out.println("Attributes: " + Arrays.toString(attributes));
 				inventory.put((String) entry.getKey(), new Item((String) entry.getKey(),
 						Integer.parseInt(attributes[0]), Integer.parseInt(attributes[1]),
 						Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]),
 						this));
 			}
-			
-			/*if (inventory.equals("")) { //If no inventories exist, don't do anything
-				return;
-			}*/
 		} 
 		catch (IOException e2) {
 			//Something went wrong...
@@ -187,10 +181,11 @@ public class Inventory extends Observable {
 		else {
 			inventoryFileLoc += File.separator + "WackyWozniaks" + File.separator;
 		}
-		inventoryFileLoc += name + EXTENSION;
+		inventoryFileLoc += File.separator + name + EXTENSION;
 		
 		File file = new File(inventoryFileLoc);
 		file.getParentFile().mkdirs();
+		
 	}
 	
 	/**
@@ -318,7 +313,7 @@ public class Inventory extends Observable {
 			try {
 				File file = chooser.getSelectedFile();
 				
-				//Append valid extension if no extension is provided
+				//Append valid extension based on chosen file filter if no extension is provided
 				if (!(file.getName().endsWith(".docx") || file.getName().endsWith(".txt"))) {
 					if (chooser.getFileFilter().getDescription().equals("Microsoft Word Document (.docx)")) {
 						file = new File(file.getPath() + ".docx");
@@ -338,14 +333,6 @@ public class Inventory extends Observable {
 					for(Item i: this.getGroceryList()) writer.println(i.getName() + " : " + i.amountToBuy());
 					writer.close();
 				}
-				/*
-				else if(file.getName().lastIndexOf(".txt") != file.getName().length() - 4) { //if NOT docx NOR txt export
-					JOptionPane.showMessageDialog(null, "\".txt\" or \".docx\" extension required!", "Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				*/
-				
-				
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(null, "Error in Saving", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
@@ -374,14 +361,12 @@ public class Inventory extends Observable {
 		Docx4J.save(pkg, file, Docx4J.FLAG_SAVE_ZIP_FILE); //save the file
 	}
 	
-	
 	/**
 	 * Exports this inventory's grocery list to an email.
 	 */
 	public void exportListToEmail() {
 		Email.exportListToEmail(this.getListString());
 	}
-	
 	
 	/**
 	 * Prints this inventory's grocery list.
@@ -432,7 +417,7 @@ public class Inventory extends Observable {
 
 		/**
 		 * Prints the page.
-		 * Reference: http://www.java2s.com/Code/Java/2D-Graphics-GUI/Printabledemo.htm
+		 * Reference: javamail package and documentation
 		 * 
 		 * @param graphics The Graphics for this page.
 		 * @param pageFormat The PageFormat for this page.

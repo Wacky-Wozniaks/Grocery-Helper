@@ -50,7 +50,7 @@ public class Email {
 			dialog.setVisible(true);
 			
 			//Concurrent processing of both the email and "Sending email" dialog box
-			SwingWorker worker = new SwingWorker<String, Void>() {
+			SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
 				protected String doInBackground() throws Exception {
 					if (!isValidEmail(emailAddr)) { //Checks syntactical validity of email address
 						return "invalid email";

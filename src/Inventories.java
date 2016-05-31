@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Stack;
 
@@ -72,12 +70,10 @@ public class Inventories
 	public static void importInventories() throws FileNotFoundException {
 		inventories = new ArrayList<Inventory>();
 		updateFilePath();
-		
 		props = new Properties();
 		InputStream in;
 		
 		inventoriesFileLoc += FILENAME;
-		System.out.println(inventoriesFileLoc);
 		
 		try {
 			in = new FileInputStream(inventoriesFileLoc);
@@ -97,12 +93,7 @@ public class Inventories
 			in = new FileInputStream(inventoriesFileLoc);
 		}
 		
-		System.out.println(in);
 		try {
-			/*if (in == null) {
-				in.close();
-				return; //If nothing to import, don't do anything
-			}*/
 			props.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -112,16 +103,10 @@ public class Inventories
 
 		String allInventories = props.getProperty(PROPERTY_NAME);
 		
-		System.out.println("allinven: " + props.size() + allInventories);
 		if (allInventories == null || allInventories.equals("")) {
-			//MasterInventory.addInventories(inventories); //Add a blank ArrayList
-			System.out.println("returning in invens");
-			return;
+			return; //If no valid inventories, do nothing
 		}
-		//System.out.println("props size: " + props.size());
-		System.out.println(allInventories);
 		String[] inventoriesArr = allInventories.split(",");
-		System.out.println("inventoriesArr: " + Arrays.toString(inventoriesArr));
 		
 		for (String inventory: inventoriesArr) {
 			Inventory temp = new Inventory(inventory);
@@ -142,7 +127,6 @@ public class Inventories
 		
 		String inventoryNames = "";
 		for(Inventory i: inventories) {
-			System.out.println(i.getName());
 			inventoryNames += i.getName() + ",";
 		}
 		if (inventoryNames.equals("")) {
@@ -150,7 +134,7 @@ public class Inventories
 			return; //No inventories created --> don't export anything
 		}
 		inventoryNames = inventoryNames.substring(0, inventoryNames.length() - 1); //Remove last comma
-		inventoryNames.replaceAll(" ", "\\ "); //Escape space characters
+		inventoryNames.replaceAll(" ", "\\ "); //Escape space characters when writing to file
 		props.setProperty(PROPERTY_NAME, inventoryNames);
 		props.store(output, "--Saved Inventories--");
 		output.close();
@@ -159,7 +143,6 @@ public class Inventories
 		for (Inventory removed: removedInventories) {
 			File removedFile = new File(inventoriesFileLoc).getParentFile();
 			removedFile = new File(removedFile + File.separator + removed.getName() + ".inventory");
-			System.out.println(removedFile.getAbsolutePath());
 			Files.deleteIfExists(removedFile.toPath());
 		}
 	}

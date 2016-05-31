@@ -95,7 +95,7 @@ public class Operation
 			if(item != null) MasterInventory.add(item);
 			else {
 				Inventories.addInventory(inventory);
-				Inventories.undoRemoveInventory();
+				Inventories.undoRemoveInventory(); //Remove this inventory from the list of inventories to be deleted upon closing
 			}
 		}
 		enabled = true;
