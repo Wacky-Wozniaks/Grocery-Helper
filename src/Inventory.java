@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -40,9 +41,9 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
 public class Inventory extends Observable {
-	private static String inventoryFileLoc = System.getProperty("user.home");
+	private String inventoryFileLoc = System.getProperty("user.home");
 	private static final String EXTENSION = ".inventory";
-	
+		
 	private TreeMap<String, Item> inventory;
 	private String name;
 	private File file;
@@ -128,10 +129,13 @@ public class Inventory extends Observable {
 		for(Map.Entry<String, Item> item: inventory.entrySet()) {
 			Item i = item.getValue();
 			String itemName = i.getName();
+			itemName.replaceAll(" ", "\\ ");
+			
 			String itemProp = + i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
 					+ i.getCode();
+			
 			props.setProperty(itemName, itemProp);
-			props.store(output, "--Saved Inventory " + itemName + "--");
+			props.store(new FileOutputStream(inventoryFileLoc), "--Saved Inventory " + itemName + "--");
 		}
 		output.close();
 	}
@@ -152,6 +156,8 @@ public class Inventory extends Observable {
 			in.close();
 			for (Entry<Object, Object> entry: props.entrySet()) {
 				String[] attributes = ((String) (entry.getValue())).split(",");
+				System.out.println("props entryset: " + entry.toString());
+				System.out.println("Attributes: " + Arrays.toString(attributes));
 				inventory.put((String) entry.getKey(), new Item((String) entry.getKey(),
 						Integer.parseInt(attributes[0]), Integer.parseInt(attributes[1]),
 						Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]),

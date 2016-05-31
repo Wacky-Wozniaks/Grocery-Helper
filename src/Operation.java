@@ -93,7 +93,10 @@ public class Operation
 		else if(operation == REMOVED)
 		{
 			if(item != null) MasterInventory.add(item);
-			else Inventories.addInventory(inventory);
+			else {
+				Inventories.addInventory(inventory);
+				Inventories.undoRemoveInventory();
+			}
 		}
 		enabled = true;
 	}

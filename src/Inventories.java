@@ -11,9 +11,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Stack;
 
 public class Inventories
 {
@@ -22,6 +25,9 @@ public class Inventories
 	private static final String FILENAME = "inventories.ilist";
 	private static Properties props;
 	private static String PROPERTY_NAME = "inventories";
+	
+	//To erase files when program is shut down
+	private static Stack<Inventory> removedInventories = new Stack<Inventory>();
 	
 	/**
 	 * Returns the ArrayList of inventories.
@@ -51,6 +57,7 @@ public class Inventories
 	 */
 	public static void removeInventory(Inventory i)
 	{
+		removedInventories.add(i);
 		inventories.remove(i);
 		MasterInventory.remove(i);
 		GUI.removeInventory(i);
@@ -76,8 +83,6 @@ public class Inventories
 			in = new FileInputStream(inventoriesFileLoc);
 		}
 		catch (FileNotFoundException e) {
-			
-			
 			File file = new File(inventoriesFileLoc);
 			file.getParentFile().mkdirs();
 			try {
@@ -106,7 +111,8 @@ public class Inventories
 		}
 
 		String allInventories = props.getProperty(PROPERTY_NAME);
-		System.out.println("allinven: " + allInventories);
+		
+		System.out.println("allinven: " + props.size() + allInventories);
 		if (allInventories == null || allInventories.equals("")) {
 			//MasterInventory.addInventories(inventories); //Add a blank ArrayList
 			System.out.println("returning in invens");
@@ -144,9 +150,18 @@ public class Inventories
 			return; //No inventories created --> don't export anything
 		}
 		inventoryNames = inventoryNames.substring(0, inventoryNames.length() - 1); //Remove last comma
+		inventoryNames.replaceAll(" ", "\\ "); //Escape space characters
 		props.setProperty(PROPERTY_NAME, inventoryNames);
 		props.store(output, "--Saved Inventories--");
 		output.close();
+		
+		//Delete inventory files for inventories that have been removed
+		for (Inventory removed: removedInventories) {
+			File removedFile = new File(inventoriesFileLoc).getParentFile();
+			removedFile = new File(removedFile + File.separator + removed.getName() + ".inventory");
+			System.out.println(removedFile.getAbsolutePath());
+			Files.deleteIfExists(removedFile.toPath());
+		}
 	}
 	
 	/**
@@ -162,5 +177,9 @@ public class Inventories
 		}
 		File file = new File(inventoriesFileLoc);
 		file.mkdirs();
+	}
+	
+	public static void undoRemoveInventory() {
+		removedInventories.pop();
 	}
 }

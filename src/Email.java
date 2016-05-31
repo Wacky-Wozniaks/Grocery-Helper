@@ -5,12 +5,13 @@
  * @version 05/25/2016
  */
 
-import java.awt.Dimension;
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -19,41 +20,73 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 
 public class Email {
 	private static String pw;
 	/**
 	 * Exports the grocery list of the inventory and sends it as an email.
 	 */
-	public static void exportListToEmail(String listString) {
-		JDialog sending;
+	public static void exportListToEmail(final String listString) {
+		
 		try {
-			String emailAddr = (String) JOptionPane.showInputDialog(GUI.getGUI(), "Enter your email address:",
+			final String emailAddr = (String) JOptionPane.showInputDialog(GUI.getGUI(), "Enter your email address:",
 					"Email My Shopping List", JOptionPane.PLAIN_MESSAGE);
-			sending = new JDialog((JFrame) null, "Grocery List", false);
-			sending.add(new JLabel("Sending..."));
-			sending.setPreferredSize(new Dimension(300, 150));
-			sending.pack();
-			sending.setVisible(true);
 			
-			if (!isValidEmail(emailAddr)) { //Checks syntactical validity of email address
-				sending.dispose();
-				throw new IllegalArgumentException();
-			}
+			JPanel panel = new JPanel();
+			JLabel label = new JLabel("Sending email...");
+			label.setFont(new Font("Sans", Font.PLAIN, 15));
+			panel.add(label);
+			final JDialog dialog = new JDialog(GUI.getGUI(), "Sending", false);
+			dialog.setLocationRelativeTo(GUI.getGUI());
+			dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			dialog.setPreferredSize((new JOptionPane("Sending email...", JOptionPane.PLAIN_MESSAGE)).getMaximumSize());
+			dialog.add(panel);
+			dialog.pack();
+			dialog.setVisible(true);
 			
-			if (!sendEmail(emailAddr, listString)) { //Attempts to send the email
-				sending.dispose();
-				sending.setVisible(false);
-				throw new RuntimeException(); //If email doesn't go through, throw an exception
-			}
-			else { //Confirms successful sending
-				sending.dispose();
-				JOptionPane.showMessageDialog(GUI.getGUI(), "Email sent!", "Emailed list", JOptionPane.INFORMATION_MESSAGE);
-				return;
-			}
+			//Concurrent processing of both the email and "Sending email" dialog box
+			SwingWorker worker = new SwingWorker<String, Void>() {
+				protected String doInBackground() throws Exception {
+					if (!isValidEmail(emailAddr)) { //Checks syntactical validity of email address
+						return "invalid email";
+					}
+					if (!sendEmail(emailAddr, listString)) { //Attempts to send the email
+						return "email network error";
+					}
+					else { //Confirms successful sending
+						return "success";
+					}
+				}
+				@Override
+				public void done() {
+					String result;
+					try {
+						result = get();
+					} catch (InterruptedException e) {
+						throw new RuntimeException();
+					} catch (ExecutionException e) {
+						throw new RuntimeException();
+					}
+					
+					dialog.dispose(); //Get rid of the "Sending email" dialog
+					if (result.equals("success")) {
+						JOptionPane.showMessageDialog(GUI.getGUI(), "Email sent!", "Emailed list", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else if (result.equals("invalid email")) {
+						throw new IllegalArgumentException();
+					}
+					else {
+						throw new RuntimeException();
+					}
+				}
+				
+			};
+			worker.execute();
 		} 
 		catch (IllegalArgumentException e1) { //Error message for invalid email address
 			JOptionPane.showMessageDialog(GUI.getGUI(), "Invalid email address!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -61,6 +94,7 @@ public class Email {
 		}
 		catch (Throwable e2) { //Error message for all other sending failures
 			JOptionPane.showMessageDialog(GUI.getGUI(), "Sending failed!", "Error", JOptionPane.ERROR_MESSAGE);
+			e2.printStackTrace();
 			return;
 		}
 	}
