@@ -160,10 +160,7 @@ public class Inventory extends Observable {
 						this));
 			}
 		} 
-		catch (IOException e2) {
-			//Something went wrong...
-			e2.printStackTrace();
-		}
+		catch (IOException e2) {}
 	}
 	
 	/**
