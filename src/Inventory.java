@@ -154,7 +154,7 @@ public class Inventory extends Observable {
 			in.close();
 			for (Entry<Object, Object> entry: props.entrySet()) {
 				String[] attributes = ((String) (entry.getValue())).split(",");
-				inventory.put((String) entry.getKey(), new Item((String) entry.getKey(),
+				inventory.put(((String) entry.getKey()).toLowerCase(), new Item((String) entry.getKey(),
 						Integer.parseInt(attributes[0]), Integer.parseInt(attributes[1]),
 						Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]),
 						this));
