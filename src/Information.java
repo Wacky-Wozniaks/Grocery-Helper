@@ -103,17 +103,17 @@ public class Information extends JFrame {
 		}
 		else if (window == ABOUT_LEGAL) {
 			setTitle("Legal Information");
-			caption = new JLabel("Usage of Third Party Libraries");
+			caption = new JLabel("Usage of Third Party Resources");
 			textStream = getClass().getClassLoader().getResourceAsStream(LEGAL_LOC);
 		}
 		else if (window == ABOUT_LICENSE) {
-			setTitle("EULA");
+			setTitle("License Agreement");
 			caption = new JLabel("GroceryHelper™ License Agreement");
 			textStream = getClass().getClassLoader().getResourceAsStream(LICENSE_LOC);
 		}
 		else if(window == ABOUT_UNINSTALL) {
 			setTitle("Uninstall Information");
-			caption = new JLabel("Uninstall Information");
+			caption = new JLabel("How to Uninstall GroceryHelper");
 			textStream = getClass().getClassLoader().getResourceAsStream(UNINSTALL_LOC);
 		}
 		else { //If none of these selections, something went wrong

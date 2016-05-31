@@ -343,7 +343,7 @@ public class GUI
 		});
 		aboutMenu.add(legal);
 		
-		JMenuItem license = new JMenuItem("EULA"); //End user license agreement
+		JMenuItem license = new JMenuItem("License Agreement"); //End user license agreement
 		license.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Information(Information.ABOUT_LICENSE);
