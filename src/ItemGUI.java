@@ -108,9 +108,6 @@ public class ItemGUI extends JPanel
 	
 	/**
 	 * Creates a frame for an item.
-	 * 
-	 * @param item What the frame will display.
-	 * @return The frame for the item.
 	 */
 	public void createItemFrame()
 	{

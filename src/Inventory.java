@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -143,7 +142,6 @@ public class Inventory extends Observable {
 	/**
 	 * Imports an inventory from a file
 	 * 
-	 * @param inventory Name of the inventory
 	 * @throws FileNotFoundException if the inventory file cannot be found
 	 */
 	public void importInventory() throws FileNotFoundException {
@@ -202,6 +200,7 @@ public class Inventory extends Observable {
 	 * Adds the item to the inventory.
 	 * 
 	 * @param item The item to be added.
+	 * @return boolean Whether or not adding an Item was successful.
 	 */
 	public boolean add(Item item)
 	{
@@ -216,6 +215,7 @@ public class Inventory extends Observable {
 	/**
 	 * Adds all the items to the inventory.
 	 * 
+	 * @param items A Collection of one or more Items
 	 */
 	public void addAll(Collection<Item> items)
 	{

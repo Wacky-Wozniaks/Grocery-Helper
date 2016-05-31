@@ -144,6 +144,7 @@ public class GUI
 	
 	/**
 	 * Returns the JFrame that represents the entire GUI. 
+	 * @return gui
 	 */
 	public static JFrame getGUI() {
 		return gui;

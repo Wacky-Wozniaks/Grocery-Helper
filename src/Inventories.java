@@ -64,7 +64,6 @@ public class Inventories
 	/**
 	 * Imports the list of inventory names from last use of program
 	 * 
-	 * @return The list of inventory names
 	 * @throws FileNotFoundException If there is a problem locating the File
 	 */
 	public static void importInventories() throws FileNotFoundException {

@@ -34,7 +34,7 @@ public class InventoryGUI extends JPanel implements Observer
 	/**
 	 * Constructs the GUI with the given inventory.
 	 * 
-	 * @param inventory The inventory to be displayed.
+	 * @param inv The inventory to be displayed.
 	 */
 	public InventoryGUI(Inventory inv)
 	{

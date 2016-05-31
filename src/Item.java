@@ -20,6 +20,7 @@ public class Item implements Comparable<Item>
 	 * @param max The maximum acceptable balance of items
 	 * @param quantity The number of items currently in inventory
 	 * @param code The item code; -1 if no code
+	 * @param inventory The inventory in which to store the item.
 	 */
 	public Item(String name, int min, int max, int quantity, int code, Inventory inventory)
 	{
@@ -39,6 +40,7 @@ public class Item implements Comparable<Item>
 	 * @param min The minimum acceptable balance of items
 	 * @param max The maximum acceptable balance of items
 	 * @param quantity The number of items currently in inventory
+	 * @param inventory The inventory in which to store the item.
 	 */
 	public Item(String name, int min, int max, int quantity, Inventory inventory)
 	{
@@ -51,6 +53,7 @@ public class Item implements Comparable<Item>
 	 * @param name The name of the item
 	 * @param min The minimum acceptable balance of items
 	 * @param max The maximum acceptable balance of items
+	 * @param inventory The inventory in which to store the item.
 	 */
 	public Item(String name, int min, int max, Inventory inventory)
 	{

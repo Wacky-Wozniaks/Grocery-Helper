@@ -48,8 +48,7 @@ public class Information extends JFrame {
 	/**
 	 * Instantiates a new Information window
 	 * 
-	 * @param The information of the window to open
-	 * @throws IOException 
+	 * @param window The information of the window to open
 	 */
 	public Information (int window) {
 		super("Information");

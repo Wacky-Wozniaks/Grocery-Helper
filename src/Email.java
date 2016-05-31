@@ -30,6 +30,8 @@ public class Email {
 	private static String pw;
 	/**
 	 * Exports the grocery list of the inventory and sends it as an email.
+	 * 
+	 * @param listString The String representation of a grocery list.
 	 */
 	public static void exportListToEmail(final String listString) {
 		
