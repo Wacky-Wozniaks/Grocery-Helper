@@ -6,17 +6,22 @@
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Arrays;
+import java.util.Properties;
 
 public class Inventories
 {
 	private static ArrayList<Inventory> inventories;
-	private static final String INVENTORY_FILE_LOC = System.getProperty("user.home") 
-			+ "/Library/Application Support/WackyWozniaks/GroceryHelper/inventories.ilist";
+	private static String inventoriesFileLoc = System.getProperty("user.home");	
+	private static final String FILENAME = "inventories.ilist";
+	private static Properties props;
+	private static String PROPERTY_NAME = "inventories";
 	
 	/**
 	 * Returns the ArrayList of inventories.
@@ -59,17 +64,65 @@ public class Inventories
 	 */
 	public static void importInventories() throws FileNotFoundException {
 		inventories = new ArrayList<Inventory>();
-		File file = new File(INVENTORY_FILE_LOC);
+		updateFilePath();
 		
-		if(!file.exists()) return;
+		props = new Properties();
+		InputStream in;
 		
-		Scanner scan = new Scanner(file);
-		while(scan.hasNextLine()) {
-			Inventory temp = new Inventory(scan.nextLine());
+		inventoriesFileLoc += FILENAME;
+		System.out.println(inventoriesFileLoc);
+		
+		try {
+			in = new FileInputStream(inventoriesFileLoc);
+		}
+		catch (FileNotFoundException e) {
+			
+			
+			File file = new File(inventoriesFileLoc);
+			file.getParentFile().mkdirs();
+			try {
+				file.createNewFile();
+				FileOutputStream output = new FileOutputStream(file);
+				props.setProperty(PROPERTY_NAME, "");
+				props.store(output, "");
+				output.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			in = new FileInputStream(inventoriesFileLoc);
+		}
+		
+		System.out.println(in);
+		try {
+			/*if (in == null) {
+				in.close();
+				return; //If nothing to import, don't do anything
+			}*/
+			props.load(in);
+			in.close();
+		} catch (IOException e) {
+			//Something went wrong...
+			e.printStackTrace();
+		}
+
+		String allInventories = props.getProperty(PROPERTY_NAME);
+		System.out.println("allinven: " + allInventories);
+		if (allInventories == null || allInventories.equals("")) {
+			//MasterInventory.addInventories(inventories); //Add a blank ArrayList
+			System.out.println("returning in invens");
+			return;
+		}
+		//System.out.println("props size: " + props.size());
+		System.out.println(allInventories);
+		String[] inventoriesArr = allInventories.split(",");
+		System.out.println("inventoriesArr: " + Arrays.toString(inventoriesArr));
+		
+		for (String inventory: inventoriesArr) {
+			Inventory temp = new Inventory(inventory);
 			temp.importInventory();
 			inventories.add(temp);
 		}
-		scan.close();
+		
 		MasterInventory.addInventories(inventories);
 	}
 	
@@ -79,12 +132,35 @@ public class Inventories
 	 * @throws IOException If there is a problem in export
 	 */
 	public static void exportInventories() throws IOException {
-		File file = new File(INVENTORY_FILE_LOC);
-		file.getParentFile().mkdirs();
+		FileOutputStream output = new FileOutputStream(inventoriesFileLoc);
 		
-		if(!file.exists()) file.createNewFile();
-		PrintWriter writer = new PrintWriter(file);
-		for(Inventory i: inventories) writer.println(i.getName());
-		writer.close();
+		String inventoryNames = "";
+		for(Inventory i: inventories) {
+			System.out.println(i.getName());
+			inventoryNames += i.getName() + ",";
+		}
+		if (inventoryNames.equals("")) {
+			output.close();
+			return; //No inventories created --> don't export anything
+		}
+		inventoryNames = inventoryNames.substring(0, inventoryNames.length() - 1); //Remove last comma
+		props.setProperty(PROPERTY_NAME, inventoryNames);
+		props.store(output, "--Saved Inventories--");
+		output.close();
+	}
+	
+	/**
+	 * Updates the file path for the location of the properties file depending
+	 * on the operating system.
+	 */
+	private static void updateFilePath() {
+		if (System.getProperty("os.name").contains("Mac")) {
+			inventoriesFileLoc += File.separator + "Library" + File.separator + "WackyWozniaks" + File.separator;
+		}
+		else {
+			inventoriesFileLoc += File.separator + "WackyWozniaks" + File.separator;
+		}
+		File file = new File(inventoriesFileLoc);
+		file.mkdirs();
 	}
 }

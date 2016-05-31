@@ -15,14 +15,19 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
-import java.util.Scanner;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import javax.swing.JFileChooser;
@@ -35,15 +40,14 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
 public class Inventory extends Observable {
-	
+	private static String inventoryFileLoc = System.getProperty("user.home");
 	private static final String EXTENSION = ".inventory";
-	private static final String PREFIX = System.getProperty("user.home") + "/Library/Application Support/WackyWozniaks/GroceryHelper/";
 	
 	private TreeMap<String, Item> inventory;
 	private String name;
-	private String fileName;
 	private File file;
 	private InventoryGUI gui;
+	private Properties props;
 	
 	/**
 	 * Represents an inventory of items initialized with the given items.
@@ -59,8 +63,6 @@ public class Inventory extends Observable {
 			inventory.put(i.getName().toLowerCase(), i);
 		}
 		this.name = name;
-		fileName = PREFIX + name + EXTENSION;
-		file = new File(fileName);
 	}
 	
 	/**
@@ -71,8 +73,6 @@ public class Inventory extends Observable {
 	public Inventory(String name) {
 		inventory = new TreeMap<String, Item>();
 		this.name = name;
-		fileName = PREFIX + name + EXTENSION;
-		file = new File(fileName);
 	}
 	
 	/**
@@ -103,8 +103,7 @@ public class Inventory extends Observable {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		fileName = PREFIX + name + EXTENSION;
-		File newFile = new File(fileName);
+		File newFile = new File(inventoryFileLoc);
 		if(file.exists()) file.renameTo(newFile);
 		file = newFile;
 	}
@@ -115,29 +114,77 @@ public class Inventory extends Observable {
 	 * @throws IOException if the file cannot be created
 	 */
 	public void exportInventory() throws IOException {
-		file.getParentFile().mkdirs();
-		if(!file.exists()) file.createNewFile();
+		FileOutputStream output;
+		try {
+			output = new FileOutputStream(inventoryFileLoc);
+		}
+		catch (FileNotFoundException e) {
+			updateFilePath();
+		}
+		finally {
+			output = new FileOutputStream(inventoryFileLoc);
+		}
 		
-		PrintWriter writer = new PrintWriter(file);
-		for(Item i: inventory.values()) writer.println(i.getName() + "," + i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
-					+ i.getCode());
-		writer.close();
+		for(Map.Entry<String, Item> item: inventory.entrySet()) {
+			Item i = item.getValue();
+			String itemName = i.getName();
+			String itemProp = + i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
+					+ i.getCode();
+			props.setProperty(itemName, itemProp);
+			props.store(output, "--Saved Inventory " + itemName + "--");
+		}
+		output.close();
 	}
 	
 	/**
-	 * Imports this inventory to a file
+	 * Imports an inventory from a file
 	 * 
-	 * @throws FileNotFoundException if there is no file to import
+	 * @param inventory Name of the inventory
+	 * @throws FileNotFoundException if the inventory file cannot be found
 	 */
 	public void importInventory() throws FileNotFoundException {
-		if(!file.exists()) throw new FileNotFoundException();
-		Scanner scan = new Scanner(file);
-		while(scan.hasNextLine()) {
-			String line = scan.nextLine();
-			String[] item = line.split(",");
-			add(new Item(item[0], Integer.parseInt(item[1]), Integer.parseInt(item[2]), Integer.parseInt(item[3]), Integer.parseInt(item[4]), this));
+		updateFilePath();
+		InputStream in;
+		
+		in = new FileInputStream(inventoryFileLoc);
+		try {
+			props.load(in);
+			in.close();
+			for (Entry<Object, Object> entry: props.entrySet()) {
+				String[] attributes = ((String) (entry.getValue())).split(",");
+				inventory.put((String) entry.getKey(), new Item((String) entry.getKey(),
+						Integer.parseInt(attributes[0]), Integer.parseInt(attributes[1]),
+						Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]),
+						this));
+			}
+			
+			/*if (inventory.equals("")) { //If no inventories exist, don't do anything
+				return;
+			}*/
+		} 
+		catch (IOException e2) {
+			//Something went wrong...
+			e2.printStackTrace();
 		}
-		scan.close();
+	}
+	
+	/**
+	 * Updates the file path for the location of the properties file depending
+	 * on the operating system.
+	 */
+	private void updateFilePath() {
+		props = new Properties();
+		
+		if (System.getProperty("os.name").contains("Mac")) {
+			inventoryFileLoc += File.separator + "Library" + File.separator + "WackyWozniaks" + File.separator;
+		}
+		else {
+			inventoryFileLoc += File.separator + "WackyWozniaks" + File.separator;
+		}
+		inventoryFileLoc += name + EXTENSION;
+		
+		File file = new File(inventoryFileLoc);
+		file.getParentFile().mkdirs();
 	}
 	
 	/**
