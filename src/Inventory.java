@@ -124,18 +124,18 @@ public class Inventory extends Observable {
 		finally {
 			output = new FileOutputStream(inventoryFileLoc);
 		}
-		
+		props.clear(); //Reset the properties file so it can be overwritten
 		for(Map.Entry<String, Item> item: inventory.entrySet()) {
 			Item i = item.getValue();
 			String itemName = i.getName();
 			itemName.replaceAll(" ", "\\ ");
 			
-			String itemProp = + i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
+			String itemProp = i.getMin() + "," + i.getMax() + "," + i.getQuantity() + "," 
 					+ i.getCode();
 			
 			props.setProperty(itemName, itemProp);
-			props.store(new FileOutputStream(inventoryFileLoc), "--Saved Inventory " + itemName + "--");
 		}
+		props.store(new FileOutputStream(inventoryFileLoc), "--Saved Inventory " + name + "--");
 		output.close();
 	}
 	

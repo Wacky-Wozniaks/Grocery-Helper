@@ -134,6 +134,7 @@ public class Inventories
 		}
 		inventoryNames = inventoryNames.substring(0, inventoryNames.length() - 1); //Remove last comma
 		inventoryNames.replaceAll(" ", "\\ "); //Escape space characters when writing to file
+		props.clear(); //Reset the properties file so it can be overwritten
 		props.setProperty(PROPERTY_NAME, inventoryNames);
 		props.store(output, "--Saved Inventories--");
 		output.close();
