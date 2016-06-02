@@ -1,0 +1,25 @@
+\contentsline {section}{Introduction}{3}
+\contentsline {section}{System Requirements}{3}
+\contentsline {section}{Getting Started}{4}
+\contentsline {section}{Using GroceryHelper}{4}
+\contentsline {subsection}{Your Inventories}{4}
+\contentsline {subsubsection}{Adding Inventories}{5}
+\contentsline {subsubsection}{Removing Inventories}{5}
+\contentsline {subsubsection}{Searching Inventories}{6}
+\contentsline {subsection}{Your Items}{7}
+\contentsline {subsubsection}{Adding Items}{7}
+\contentsline {subsubsection}{Modifying Items}{8}
+\contentsline {subsubsection}{Removing Items}{9}
+\contentsline {subsection}{Grocery List}{9}
+\contentsline {subsubsection}{Export List to a File}{10}
+\contentsline {subsubsection}{Printing}{11}
+\contentsline {subsubsection}{Emailing}{12}
+\contentsline {subsection}{Undo and Redo Functions}{13}
+\contentsline {section}{Uninstalling GroceryHelper}{14}
+\contentsline {subsection}{Windows Users}{14}
+\contentsline {subsection}{Mac OS X Users}{14}
+\contentsline {subsection}{Linux Users}{14}
+\contentsline {section}{Frequently Asked Questions}{15}
+\contentsline {section}{Additional Screenshots of GroceryHelper}{16}
+\contentsline {section}{Legal Information}{17}
+\contentsline {section}{Software License Agreement}{18}
